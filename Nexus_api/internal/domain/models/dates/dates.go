@@ -12,7 +12,7 @@ type GoalDates struct {
 }
 
 type TaskDates struct {
-	StartDate        time.Time `gorm:"not null"`
+	StartDate        *time.Time 
 	FinalizationDate *time.Time
 	TimeSpent        *int64
 }
