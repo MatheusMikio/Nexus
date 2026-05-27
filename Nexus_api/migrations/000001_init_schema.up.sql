@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     name varchar(150) NOT NULL,
     description text DEFAULT 'Descrição não informada',
     status task_status NOT NULL DEFAULT 'Pendente',
-    start_date timestamptz NOT NULL,
+    start_date timestamptz,
     finalization_date timestamptz,
     time_spent bigint,
     goal_id bigint NOT NULL,

@@ -10,6 +10,7 @@ import (
 type IGoalRepository interface {
 	base.ICrudRepository[schemas.Goal]
 	GetAllByUserId(page, size int, userId uuid.UUID) ([]*schemas.Goal, error)
+	GetByIDAndUserID(goalID, userID uint) (*schemas.Goal, error)
 }
 
 type GoalRepository struct {
@@ -37,4 +38,18 @@ func (gr *GoalRepository) GetAllByUserId(page, size int, userId uuid.UUID) ([]*s
 		return nil, err
 	}
 	return goals, nil
+}
+
+func (r *GoalRepository) GetByIDAndUserID(goalID, userID uint) (*schemas.Goal, error) {
+    var goal schemas.Goal
+
+    err := r.Db.
+        Where("id = ? AND user_id = ?", goalID, userID).
+        First(&goal).Error
+
+    if err != nil {
+        return nil, err
+    }
+
+    return &goal, nil
 }
