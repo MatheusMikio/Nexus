@@ -28,7 +28,12 @@ func (gr *GoalRepository) GetAllByUserId(page, size int, userId uuid.UUID) ([]*s
 	var goals []*schemas.Goal
 	offset := (page - 1) * size
 
-	if err := gr.Db.Where("user_id = ?", userId).Offset(offset).Limit(size).Find(&goals).Error; err != nil {
+	if err := gr.Db.
+		Joins("JOIN users ON users.id = goals.user_id").
+		Where("users.public_id = ?", userId).
+		Offset(offset).
+		Limit(size).
+		Find(&goals).Error; err != nil {
 		return nil, err
 	}
 	return goals, nil
