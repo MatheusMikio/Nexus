@@ -26,7 +26,7 @@ func (cr *CrudRepository[T]) GetAll(page, size int) ([]*T, error) {
 
 func (cr *CrudRepository[T]) GetByID(id uint) (*T, error) {
 	var entity T
-	if err := cr.Db.First(entity, id).Error; err != nil {
+	if err := cr.Db.First(&entity, id).Error; err != nil {
 		return nil, err
 	}
 	return &entity, nil
