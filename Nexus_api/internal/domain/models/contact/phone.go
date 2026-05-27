@@ -1,5 +1,7 @@
 package contact
 
+import "github.com/MatheusMikio/Nexus/internal/domain/models"
+
 type Phone struct {
 	Value string `gorm:"column:phone;not null;size:11"`
 }

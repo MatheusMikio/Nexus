@@ -1,12 +1,22 @@
 package config
 
+import (
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
-var(
-	db *gorm.DB
+	"github.com/joho/godotenv"
+	"gorm.io/gorm"
+)
+
+var (
+	db  *gorm.DB
 	cfg Config
 )
 
-type Config struct{
+type Config struct {
 	DBHost             string
 	DBPort             string
 	DBUser             string
@@ -15,25 +25,24 @@ type Config struct{
 	DBSSLMode          string
 	JWTSecret          string
 	PasswordPepper     string
-	ServerPort         string
 	CORSAllowedOrigins []string
 }
 
 func Init() error {
-	_ = godotenv.Load(filepath.Join("..", ".env"))
+
+	_ = godotenv.Load()
+	_ = godotenv.Load(filepath.Join("..", "..", ".env"))
 
 	var err error
 	cfg, err = loadConfig()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
-	db, err := initPostgreSQL(cfg)
-	
-	if err != nil{
-		return err
+	db, err = initPostgreSQL(cfg)
+	if err != nil {
+		return fmt.Errorf("initializing database: %w", err)
 	}
-
 	return nil
 }
 
@@ -46,7 +55,6 @@ func loadConfig() (Config, error) {
 		DBName:         strings.TrimSpace(os.Getenv("DB_NAME")),
 		DBSSLMode:      strings.TrimSpace(os.Getenv("DB_SSLMODE")),
 		JWTSecret:      strings.TrimSpace(os.Getenv("JWT_SECRET")),
-		ServerPort:     strings.TrimSpace(os.Getenv("SERVER_PORT")),
 		PasswordPepper: strings.TrimSpace(os.Getenv("PASSWORD_PEPPER")),
 	}
 
