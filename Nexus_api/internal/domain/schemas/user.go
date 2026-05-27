@@ -9,7 +9,7 @@ import (
 
 type User struct {
 	gorm.Model
-	publicID uuid.UUID `gorm:"type:uuid;unique;not null"`
+	publicID uuid.UUID       `gorm:"type:uuid;unique;not null"`
 	FullName models.FullName `gorm:"embedded"`
 	Contact  contact.Contact `gorm:"embedded"`
 	Password models.Password `gorm:"embedded"`
@@ -20,7 +20,7 @@ func NewUser(fullName models.FullName, contact contact.Contact, password models.
 	return &User{
 		publicID: uuid.New(),
 		FullName: fullName,
-		Contact: contact,
+		Contact:  contact,
 		Password: password,
 	}, nil
 }

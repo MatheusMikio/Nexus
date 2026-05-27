@@ -1,15 +1,21 @@
 package repository
 
-type ITaskRepository interface{
+import (
+	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
+	"github.com/MatheusMikio/Nexus/internal/repository/base"
+	"gorm.io/gorm"
+)
+
+type ITaskRepository interface {
 	base.ICrudRepository[schemas.Task]
 	GetAllByGoalID(page, size int, goalID uint, userID uint) ([]*schemas.Task, error)
 }
 
-type TaskRepository struct{
+type TaskRepository struct {
 	base.CrudRepository[schemas.Task]
 }
 
-func NewTaskRepository(db *gorm.DB) ITaskRepository{
+func NewTaskRepository(db *gorm.DB) ITaskRepository {
 	return &TaskRepository{
 		CrudRepository: base.CrudRepository[schemas.Task]{
 			Db: db,

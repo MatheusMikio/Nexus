@@ -1,6 +1,10 @@
 package dates
 
-import "time"
+import (
+	"time"
+
+	"github.com/MatheusMikio/Nexus/internal/domain/models"
+)
 
 type GoalDates struct {
 	startDate            time.Time `gorm:"not null"`
@@ -13,7 +17,6 @@ type TaskDates struct {
 	TimeSpent        *int64
 }
 
-
 func NewGoalDates(startDate time.Time, finalizationForecast *time.Time) (GoalDates, []*models.ErrorMessage) {
 	return GoalDates{
 		startDate:            startDate,
@@ -23,9 +26,10 @@ func NewGoalDates(startDate time.Time, finalizationForecast *time.Time) (GoalDat
 
 func NewTaskDates(startDate time.Time, finalizationDate *time.Time) (TaskDates, []*models.ErrorMessage) {
 	var timeSpent *int64
-	
+
 	if finalizationDate != nil {
-		timeSpent := int64(finalizationDate.Sub(startDate).Minutes())
+		ts := int64(finalizationDate.Sub(startDate).Minutes())
+		timeSpent = &ts
 	}
 
 	return TaskDates{
