@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
+	//"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -17,15 +17,11 @@ func initPostgreSQL(cfg Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate(
-		&schemas.Goal{},
-		&schemas.Task{},
-		&schemas.User{},
-	)
+	// err = db.AutoMigrate(autoMigrateSchemas...)
 
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return db, nil
 }

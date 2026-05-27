@@ -20,7 +20,7 @@ type Goal struct {
 	GoalName    models.GoalName `gorm:"embedded"`
 	Description string          `gorm:"default:'Descrição não informada'"`
 	Dates       dates.GoalDates `gorm:"embedded"`
-	Status      GoalStatus      `gorm:"type:goal_status;not null;default:'Pending'"`
+	Status      GoalStatus      `gorm:"type:goal_status;not null;default:'Pendente'"`
 	UserID      uint            `gorm:"not null"`
 	User        User            `gorm:"foreignKey:UserID"`
 	Tasks       []Task
@@ -30,8 +30,8 @@ func NewGoal(goal models.GoalName, description string, dates dates.GoalDates, us
 	return &Goal{
 		GoalName:    goal,
 		Description: description,
-		Dates: dates,
-		Status: GoalPending,
-		UserID: userID,
+		Dates:       dates,
+		Status:      GoalPending,
+		UserID:      userID,
 	}, nil
 }

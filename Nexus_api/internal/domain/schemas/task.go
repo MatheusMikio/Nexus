@@ -30,6 +30,6 @@ func NewTask(name models.GoalName, description string, dates dates.TaskDates, go
 		Description: description,
 		Dates:       dates,
 		GoalID:      goalID,
-		Status: TaskPending,
+		Status:      TaskPending,
 	}, nil
 }
