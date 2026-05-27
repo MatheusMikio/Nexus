@@ -25,3 +25,13 @@ type Goal struct {
 	User        User            `gorm:"foreignKey:UserID"`
 	Tasks       []Task
 }
+
+func NewGoal(goal models.GoalName, description string, dates dates.GoalDates, userID uint) (*Goal, []*models.ErrorMessage) {
+	return &Goal{
+		GoalName:    goal,
+		Description: description,
+		Dates: dates,
+		Status: GoalPending,
+		UserID: userID,
+	}, nil
+}

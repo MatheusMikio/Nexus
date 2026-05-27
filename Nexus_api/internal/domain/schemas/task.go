@@ -10,8 +10,8 @@ type TaskStatus string
 
 const (
 	TaskPending    TaskStatus = "Pendente"
-	TaskCompleted  TaskStatus = "Concluido"
 	TaskInProgress TaskStatus = "Em progresso"
+	TaskCompleted  TaskStatus = "Concluido"
 )
 
 type Task struct {
@@ -22,4 +22,14 @@ type Task struct {
 	Dates       dates.TaskDates `gorm:"embedded"`
 	GoalID      uint            `gorm:"not null"`
 	Goal        Goal            `gorm:"foreignKey:GoalID"`
+}
+
+func NewTask(name models.GoalName, description string, dates dates.TaskDates, goalID uint) (*Task, []*models.ErrorMessage) {
+	return &Task{
+		Name:        name,
+		Description: description,
+		Dates:       dates,
+		GoalID:      goalID,
+		Status: TaskPending,
+	}, nil
 }
