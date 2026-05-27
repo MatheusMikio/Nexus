@@ -8,7 +8,7 @@ BEGIN
             'Atrasada'
         );
     END IF;
-END
+END;
 $$;
 
 DO $$
@@ -20,7 +20,7 @@ BEGIN
             'Concluido'
         );
     END IF;
-END
+END;
 $$;
 
 CREATE TABLE IF NOT EXISTS users (
