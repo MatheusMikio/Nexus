@@ -11,4 +11,5 @@ type User struct {
 	FullName models.FullName `gorm:"embedded"`
 	Contact  contact.Contact `gorm:"embedded"`
 	Password models.Password `gorm:"embedded"`
+	Goals    []Goal
 }
