@@ -20,7 +20,6 @@ type Config struct{
 }
 
 func Init() error {
-	_ = godotenv.Load()
 	_ = godotenv.Load(filepath.Join("..", ".env"))
 
 	var err error
