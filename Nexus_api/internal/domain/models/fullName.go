@@ -9,3 +9,7 @@ func NewFullName(value string) (FullName, []*ErrorMessage) {
 		Value: value,
 	}, nil
 }
+
+func (f FullName) GetValue() string {
+	return f.Value
+}

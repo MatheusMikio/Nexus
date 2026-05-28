@@ -27,7 +27,7 @@ func NewGoalDates(startDate time.Time, finalizationForecast *time.Time) (GoalDat
 func NewTaskDates(startDate *time.Time, finalizationDate *time.Time) (TaskDates, []*models.ErrorMessage) {
 	var timeSpent *int64
 
-	if finalizationDate != nil {
+	if startDate != nil && finalizationDate != nil {
 		ts := int64(finalizationDate.Sub(*startDate).Minutes())
 		timeSpent = &ts
 	}
