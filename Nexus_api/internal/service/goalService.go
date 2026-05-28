@@ -8,7 +8,7 @@ import (
 )
 
 type IGoalService interface {
-	GetAllGoals(page, size int, userID uuid.UUID) ([]*goal.Response, *models.ErrorMessage)
+	GetAllGoals(parameters parameters.PaginationQuery) ([]*goal.Response, *models.ErrorMessage)
 	GetById(id uint, userID uuid.UUID) (*goal.Response, *models.ErrorMessage)
 	Create(goal *goal.Request, userID uuid.UUID) []*models.ErrorMessage
 	Update(id uint, goal *goal.Update, userID uuid.UUID) []*models.ErrorMessage
@@ -27,7 +27,7 @@ func NewGoalService(goalRepo repository.IGoalRepository, userRepo repository.IUs
 	}
 }
 
-func (g *GoalService) GetAllGoals(page int, size int, userID uuid.UUID) ([]*goal.Response, *models.ErrorMessage) {
+func (g *GoalService) GetAllGoals(parameters parameters.PaginationQuery) ([]*goal.Response, *models.ErrorMessage) {
 	panic("unimplemented")
 }
 

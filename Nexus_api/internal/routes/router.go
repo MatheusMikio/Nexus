@@ -6,7 +6,8 @@ import (
 )
 
 func Init(db *gorm.DB) {
+	container := container.NewContainer(db)
 	router := gin.Default()
-	// container := container.NewContainer(db)
+	initRoutes(router, container)	
 	router.Run(":8080")
 }

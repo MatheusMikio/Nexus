@@ -16,13 +16,13 @@ type User struct {
 	Goals    []Goal
 }
 
-func NewUser(fullName models.FullName, contact contact.Contact, password models.Password) (*User, []*models.ErrorMessage) {
+func NewUser(fullName models.FullName, contact contact.Contact, password models.Password) *User {
 	return &User{
 		PublicID: uuid.New(),
 		FullName: fullName,
 		Contact:  contact,
 		Password: password,
-	}, nil
+	}
 }
 
 func (u *User) GetName() string {
@@ -39,4 +39,19 @@ func (u *User) GetPhone() string {
 
 func (u *User) GetPassword() string {
 	return u.Password.GetValue()
+}
+
+
+func (u *User) Update(fullName *models.FullName, contact *contact.Contact, password *models.Password) {
+	if fullName != nil {
+		u.FullName = *fullName
+	}
+
+	if contact != nil {
+		u.Contact = *contact
+	}
+
+	if password != nil {
+		u.Password = *password
+	}
 }

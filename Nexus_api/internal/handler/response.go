@@ -18,10 +18,16 @@ func SendSuccess(ctx *gin.Context, statusCode int, data any) {
 	})
 }
 
-func SendError(ctx *gin.Context, statusCode int, errors any) {
-	ctx.JSON(statusCode, gin.H{
-		"errors": errors,
-	})
+func SendError(ctx *gin.Context, statusCode int, err *models.ErrorMessage) {
+    ctx.JSON(statusCode, gin.H{
+        "errors": []any{err},
+    })
+}
+
+func SendErrors(ctx *gin.Context, statusCode int, errs []*models.ErrorMessage) {
+    ctx.JSON(statusCode, gin.H{
+        "errors": errs,
+    })
 }
 
 func SendAuthSuccess(ctx *gin.Context, statusCode int, accessToken string, expiresIn int64, user auth.AuthUser) {

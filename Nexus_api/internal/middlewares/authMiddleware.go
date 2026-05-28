@@ -14,7 +14,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		authHeader := ctx.GetHeader("Authorization")
 
 		if strings.TrimSpace(authHeader) == "" {
-			handler.SendError(ctx, http.StatusNotFound, "missing authorization header")
+			handler.SendError(ctx, http.StatusUnauthorized, "missing authorization header")
 			ctx.Abort()
 			return
 		}
