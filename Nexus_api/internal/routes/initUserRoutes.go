@@ -23,7 +23,7 @@ func initDefaultUserRoutes(router *gin.RouterGroup, userService service.IUserSer
 }
 
 func initAdminUserRoutes(router *gin.RouterGroup, userService service.IUserService) {
-	user := router.Group("/user/admin")
+	user := router.Group("/user")
 	{
 		user.GET("", handler.GetAllUsers(userService))
 	}

@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
+	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/MatheusMikio/Nexus/internal/helper"
+	"github.com/MatheusMikio/Nexus/internal/middlewares"
 	"github.com/MatheusMikio/Nexus/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -34,6 +36,23 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 		id, err := uuid.Parse(idStr)
 		if err != nil {
 			SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
+			return
+		}
+
+		authenticatedUserID, err := middlewares.GetUserID(ctx)
+		if err != nil {
+			SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+			return
+		}
+
+		authenticatedUserRole, err := middlewares.GetUserRole(ctx)
+		if err != nil {
+			SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+			return
+		}
+
+		if authenticatedUserRole != schemas.Admin && authenticatedUserID != id {
+			SendError(ctx, http.StatusForbidden, models.NewErrorMessage("Authorization", "insufficient permissions"))
 			return
 		}
 
