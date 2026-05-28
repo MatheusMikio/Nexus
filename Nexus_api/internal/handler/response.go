@@ -1,14 +1,13 @@
 package handler
 
-import(
+import (
 	"net/http"
-	"github.com/gin-gonic/gin"
-	"github.com/MatheusMikio/Nexus/internal/domain/models"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/auth"
+	"github.com/gin-gonic/gin"
 )
 
-
-func SendSuccess(ctx *gin.Context, statusCode int, data any){
+func SendSuccess(ctx *gin.Context, statusCode int, data any) {
 	if statusCode == http.StatusNoContent {
 		ctx.Status(statusCode)
 		return
@@ -25,11 +24,11 @@ func SendError(ctx *gin.Context, statusCode int, errors any) {
 	})
 }
 
-func SendAuthSuccess(ctx *gin.Context, statusCode int, accessToken string, expiresIn int64, user auth.AuthUser){
+func SendAuthSuccess(ctx *gin.Context, statusCode int, accessToken string, expiresIn int64, user auth.AuthUser) {
 	ctx.JSON(statusCode, gin.H{
 		"accessToken": accessToken,
-		"tokenType": "Bearer",
-		"expiresIn": expiresIn,
-		"user": user,
+		"tokenType":   "Bearer",
+		"expiresIn":   expiresIn,
+		"user":        user,
 	})
 }
