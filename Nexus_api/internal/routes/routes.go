@@ -23,8 +23,8 @@ func initRoutes(router *gin.Engine, container *container.Container) {
 		defaultRoutes.Use(middlewares.RoleMiddleware(schemas.Default, schemas.Admin))
 		{
 			initDefaultUserRoutes(defaultRoutes, container.UserService)
-			initGoalRoutes(defaultRoutes, container.GoalService)
-			initTaskRoutes(defaultRoutes, container.TaskService)
+			// initGoalRoutes(defaultRoutes, container.GoalService)
+			// initTaskRoutes(defaultRoutes, container.TaskService)
 		}
 
 		adminRoutes := v1.Group("")

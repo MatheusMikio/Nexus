@@ -6,7 +6,7 @@ import (
 
 	"github.com/MatheusMikio/Nexus/internal/auth"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
-	"github.com/MatheusMikio/Nexus/internal/handler"
+	"github.com/MatheusMikio/Nexus/internal/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,14 +15,14 @@ func AuthMiddleware() gin.HandlerFunc {
 		authHeader := ctx.GetHeader("Authorization")
 
 		if strings.TrimSpace(authHeader) == "" {
-			handler.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "missing authorization header"))
+			response.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "missing authorization header"))
 			ctx.Abort()
 			return
 		}
 
 		parts := strings.Fields(authHeader)
 		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			handler.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "invalid authorization header format"))
+			response.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "invalid authorization header format"))
 			ctx.Abort()
 			return
 		}
@@ -30,7 +30,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		tokenString := parts[1]
 		claims, err := auth.ValidateAccessToken(tokenString)
 		if err != nil {
-			handler.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "invalid or expired token"))
+			response.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "invalid or expired token"))
 			ctx.Abort()
 			return
 		}
