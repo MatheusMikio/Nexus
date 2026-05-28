@@ -11,3 +11,7 @@ func NewEmail(value string) (Email, []*models.ErrorMessage) {
 		Value: value,
 	}, nil
 }
+
+func (e Email) GetValue() string {
+	return e.Value
+}

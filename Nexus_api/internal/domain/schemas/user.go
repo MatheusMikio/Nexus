@@ -24,3 +24,19 @@ func NewUser(fullName models.FullName, contact contact.Contact, password models.
 		Password: password,
 	}, nil
 }
+
+func (u *User) GetName() string {
+	return u.FullName.GetValue()
+}
+
+func (u *User) GetEmail() string {
+	return u.Contact.GetEmail()
+}
+
+func (u *User) GetPhone() string {
+	return u.Contact.GetPhone()
+}
+
+func (u *User) GetPassword() string {
+	return u.Password.GetValue()
+}

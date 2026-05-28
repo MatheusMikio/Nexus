@@ -1,15 +1,15 @@
 package container
 
 import (
+	"github.com/MatheusMikio/Nexus/internal/repository"
+	"github.com/MatheusMikio/Nexus/internal/service"
 	"gorm.io/gorm"
-	"Nexus_api/internal/domain/repository"
-	"Nexus_api/internal/domain/service"
 )
 
 type Container struct {
-	GoalService IGoalService
-	TaskService ITaskService
-	UserService IUserService
+	GoalService service.IGoalService
+	TaskService service.ITaskService
+	UserService service.IUserService
 }
 
 func NewContainer(db *gorm.DB) *Container {
@@ -20,7 +20,6 @@ func NewContainer(db *gorm.DB) *Container {
 	userService := service.NewUserService(userRepo)
 	goalService := service.NewGoalService(goalRepo, userRepo)
 	taskService := service.NewTaskService(taskRepo, userRepo)
-	
 
 	return &Container{
 		GoalService: goalService,

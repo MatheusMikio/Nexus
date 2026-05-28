@@ -11,3 +11,7 @@ func NewPhone(value string) (Phone, []*models.ErrorMessage) {
 		Value: value,
 	}, nil
 }
+
+func (p Phone) GetValue() string {
+	return p.Value
+}

@@ -102,3 +102,10 @@ func splitCSV(value string) []string {
 func GetDb() *gorm.DB {
 	return db
 }
+
+func GetJwtSecret() string {
+	if cfg.JWTSecret == "" {
+		return os.Getenv("JWT_SECRET")
+	}
+	return cfg.JWTSecret
+}

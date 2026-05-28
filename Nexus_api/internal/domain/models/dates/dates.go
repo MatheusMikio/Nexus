@@ -12,7 +12,7 @@ type GoalDates struct {
 }
 
 type TaskDates struct {
-	StartDate        *time.Time 
+	StartDate        *time.Time
 	FinalizationDate *time.Time
 	TimeSpent        *int64
 }
@@ -24,11 +24,11 @@ func NewGoalDates(startDate time.Time, finalizationForecast *time.Time) (GoalDat
 	}, nil
 }
 
-func NewTaskDates(startDate time.Time, finalizationDate *time.Time) (TaskDates, []*models.ErrorMessage) {
+func NewTaskDates(startDate *time.Time, finalizationDate *time.Time) (TaskDates, []*models.ErrorMessage) {
 	var timeSpent *int64
 
-	if finalizationDate != nil {
-		ts := int64(finalizationDate.Sub(startDate).Minutes())
+	if startDate != nil && finalizationDate != nil {
+		ts := int64(finalizationDate.Sub(*startDate).Minutes())
 		timeSpent = &ts
 	}
 

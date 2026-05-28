@@ -13,3 +13,11 @@ func NewContact(email Email, phone Phone) (Contact, []*models.ErrorMessage) {
 		Phone: phone,
 	}, nil
 }
+
+func (c Contact) GetEmail() string {
+	return c.Email.GetValue()
+}
+
+func (c Contact) GetPhone() string {
+	return c.Phone.GetValue()
+}
