@@ -1,5 +1,16 @@
 DO $$
 BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role') THEN
+        CREATE TYPE role AS ENUM (
+            'DEFAULT',
+            'ADMIN'
+        );
+    END IF;
+END;
+$$;
+
+DO $$
+BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'goal_status') THEN
         CREATE TYPE goal_status AS ENUM (
             'Pendente',
@@ -32,6 +43,7 @@ CREATE TABLE IF NOT EXISTS users (
     name varchar(150) NOT NULL,
     email varchar(255) NOT NULL,
     phone varchar(11) NOT NULL,
+    role role NOT NULL DEFAULT 'DEFAULT',
     password varchar(8) NOT NULL,
     CONSTRAINT uni_users_public_id UNIQUE (public_id),
     CONSTRAINT uni_users_email UNIQUE (email)

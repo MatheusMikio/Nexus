@@ -6,15 +6,17 @@ import (
 
 	"github.com/MatheusMikio/Nexus/config"
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/auth"
+	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )
 
 const accessTokenTTL = 2 * time.Hour
 
-func GenerateAccessToken(userUuid uuid.UUID) (string, error) {
+func GenerateAccessToken(userUuid uuid.UUID, userRole schemas.Role) (string, error) {
 	claims := auth.Claims{
 		ID: userUuid,
+		Role: userRole,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(accessTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

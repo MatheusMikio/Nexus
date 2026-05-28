@@ -10,7 +10,7 @@ func NewPaginationQuery(page, size int) PaginationQuery {
 		page = 1
 	}
 
-	if size <= 0 {
+	if size < 12 {
 		size = 12
 	}
 

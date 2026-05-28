@@ -7,22 +7,31 @@ import (
 	"gorm.io/gorm"
 )
 
+type Role string
+
+const (
+	Default Role = "DEFAULT"
+	Admin   Role = "ADMIN"
+)
+
 type User struct {
 	gorm.Model
 	PublicID uuid.UUID       `gorm:"type:uuid;unique;not null"`
 	FullName models.FullName `gorm:"embedded"`
 	Contact  contact.Contact `gorm:"embedded"`
+	Role     Role            `gorm:"type:role;not null;default:'DEFAULT'"`
 	Password models.Password `gorm:"embedded"`
 	Goals    []Goal
 }
 
-func NewUser(fullName models.FullName, contact contact.Contact, password models.Password) (*User, []*models.ErrorMessage) {
+func NewUser(fullName models.FullName, contact contact.Contact, password models.Password) *User {
 	return &User{
 		PublicID: uuid.New(),
 		FullName: fullName,
 		Contact:  contact,
+		Role:     Default,
 		Password: password,
-	}, nil
+	}
 }
 
 func (u *User) GetName() string {
@@ -39,4 +48,18 @@ func (u *User) GetPhone() string {
 
 func (u *User) GetPassword() string {
 	return u.Password.GetValue()
+}
+
+func (u *User) Update(fullName *models.FullName, contact *contact.Contact, password *models.Password) {
+	if fullName != nil {
+		u.FullName = *fullName
+	}
+
+	if contact != nil {
+		u.Contact = *contact
+	}
+
+	if password != nil {
+		u.Password = *password
+	}
 }

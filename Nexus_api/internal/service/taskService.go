@@ -3,12 +3,13 @@ package service
 import (
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/task"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
+	"github.com/MatheusMikio/Nexus/internal/domain/models/parameters"
 	"github.com/MatheusMikio/Nexus/internal/repository"
 	"github.com/google/uuid"
 )
 
 type ITaskService interface {
-	GetAllTasks(page, size int, goalId uint, userId uuid.UUID) ([]*task.Response, *models.ErrorMessage)
+	GetAllTasks(parameters parameters.PaginationQuery, goalId uint, userId uuid.UUID) ([]*task.Response, *models.ErrorMessage)
 	GetById(id uint, userId uuid.UUID) (*task.Response, *models.ErrorMessage)
 	Create(goalID uint, task *task.Request, userId uuid.UUID) []*models.ErrorMessage
 	Update(id uint, task *task.Update, userId uuid.UUID) []*models.ErrorMessage
@@ -27,7 +28,7 @@ func NewTaskService(taskRepo repository.ITaskRepository, userRepo repository.IUs
 	}
 }
 
-func (t *TaskService) GetAllTasks(page int, size int, goalId uint, userId uuid.UUID) ([]*task.Response, *models.ErrorMessage) {
+func (t *TaskService) GetAllTasks(parameters parameters.PaginationQuery, goalId uint, userId uuid.UUID) ([]*task.Response, *models.ErrorMessage) {
 	panic("unimplemented")
 }
 
