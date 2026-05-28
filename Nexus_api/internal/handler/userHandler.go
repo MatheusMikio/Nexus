@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	userdto "github.com/MatheusMikio/Nexus/internal/domain/dtos/user"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/MatheusMikio/Nexus/internal/helper"
@@ -45,13 +46,87 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 		}
 
 		user, serviceErr := userService.GetById(id)
-		
+
 		if serviceErr != nil {
-			SendError(ctx, http.StatusNotFound, serviceErr)
+			SendError(ctx, userErrorStatusCode(serviceErr), serviceErr)
 			return
 		}
 
 		SendSuccess(ctx, http.StatusOK, user)
+	}
+}
+
+func Create(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		request := &userdto.Request{}
+
+		if err := ctx.ShouldBindJSON(request); err != nil {
+			SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", err.Error()))
+			return
+		}
+
+		if err := userService.Create(request); err != nil {
+			SendErrors(ctx, http.StatusBadRequest, err)
+			return
+		}
+
+		SendSuccess(ctx, http.StatusCreated, nil)
+	}
+}
+
+func Update(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		idStr := ctx.Param("id")
+		id, err := uuid.Parse(idStr)
+		if err != nil {
+			SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
+			return
+		}
+
+		if !authorizeSelfOrAdmin(ctx, id) {
+			return
+		}
+
+		request := &userdto.Update{}
+		if err := ctx.ShouldBindJSON(request); err != nil {
+			SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", err.Error()))
+			return
+		}
+
+		if err := userService.Update(id, request); err != nil {
+			statusCode := http.StatusBadRequest
+			if len(err) == 1 {
+				statusCode = userErrorStatusCode(err[0])
+			}
+
+			SendErrors(ctx, statusCode, err)
+			return
+		}
+
+		SendSuccess(ctx, http.StatusOK, nil)
+	}
+}
+
+func Delete(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		idStr := ctx.Param("id")
+
+		id, err := uuid.Parse(idStr)
+		if err != nil {
+			SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
+			return
+		}
+
+		if !authorizeSelfOrAdmin(ctx, id) {
+			return
+		}
+
+		if err := userService.Delete(id); err != nil {
+			SendError(ctx, userErrorStatusCode(err), err)
+			return
+		}
+
+		SendSuccess(ctx, http.StatusOK, nil)
 	}
 }
 
@@ -74,4 +149,16 @@ func authorizeSelfOrAdmin(ctx *gin.Context, targetUserID uuid.UUID) bool {
 	}
 
 	return true
+}
+
+func userErrorStatusCode(err *models.ErrorMessage) int {
+	if err.Property == "User" && err.Message == "Not found" {
+		return http.StatusNotFound
+	}
+
+	if err.Property == "Database" {
+		return http.StatusInternalServerError
+	}
+
+	return http.StatusBadRequest
 }

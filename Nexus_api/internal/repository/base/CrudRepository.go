@@ -1,6 +1,12 @@
 package base
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
+
+var ErrNotFound = errors.New("entity not found")
 
 type ICrudRepository[T any] interface {
 	GetAll(page, size int) ([]*T, error)
@@ -27,6 +33,10 @@ func (cr *CrudRepository[T]) GetAll(page, size int) ([]*T, error) {
 func (cr *CrudRepository[T]) GetByID(id uint) (*T, error) {
 	var entity T
 	if err := cr.Db.First(&entity, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
+		}
+
 		return nil, err
 	}
 	return &entity, nil

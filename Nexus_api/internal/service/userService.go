@@ -1,12 +1,15 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/user"
 	"github.com/MatheusMikio/Nexus/internal/domain/factory"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/MatheusMikio/Nexus/internal/domain/models/parameters"
 	"github.com/MatheusMikio/Nexus/internal/mapper"
 	"github.com/MatheusMikio/Nexus/internal/repository"
+	"github.com/MatheusMikio/Nexus/internal/repository/base"
 	"github.com/google/uuid"
 )
 
@@ -42,7 +45,7 @@ func (u *UserService) GetById(id uuid.UUID) (*user.Response, *models.ErrorMessag
 	userDb, err := u.UserRepo.GetByUuid(id)
 
 	if err != nil {
-		return nil, models.NewErrorMessage("User", "Not found")
+		return nil, userFindError(err)
 	}
 
 	return mapper.UserToResponse(userDb), nil
@@ -66,7 +69,7 @@ func (u *UserService) Update(id uuid.UUID, user *user.Update) []*models.ErrorMes
 	userDb, err := u.UserRepo.GetByUuid(id)
 
 	if err != nil {
-		return []*models.ErrorMessage{models.NewErrorMessage("User", "Not found")}
+		return []*models.ErrorMessage{userFindError(err)}
 	}
 
 	errors := factory.BuildUserUpdate(user, userDb)
@@ -85,7 +88,7 @@ func (u *UserService) Delete(id uuid.UUID) *models.ErrorMessage {
 	userDb, err := u.UserRepo.GetByUuid(id)
 
 	if err != nil {
-		return models.NewErrorMessage("User", "Not found")
+		return userFindError(err)
 	}
 
 	if err := u.UserRepo.Delete(userDb); err != nil {
@@ -93,4 +96,12 @@ func (u *UserService) Delete(id uuid.UUID) *models.ErrorMessage {
 	}
 
 	return nil
+}
+
+func userFindError(err error) *models.ErrorMessage {
+	if errors.Is(err, base.ErrNotFound) {
+		return models.NewErrorMessage("User", "Not found")
+	}
+
+	return models.NewErrorMessage("Database", err.Error())
 }
