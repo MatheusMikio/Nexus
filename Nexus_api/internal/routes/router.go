@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/MatheusMikio/Nexus/internal/container"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -8,6 +9,6 @@ import (
 func Init(db *gorm.DB) {
 	container := container.NewContainer(db)
 	router := gin.Default()
-	initRoutes(router, container)	
+	initRoutes(router, container)
 	router.Run(":8080")
 }

@@ -40,11 +40,11 @@ func (u *UserService) GetAll(parameters parameters.PaginationQuery) ([]*user.Res
 
 func (u *UserService) GetById(id uuid.UUID) (*user.Response, *models.ErrorMessage) {
 	userDb, err := u.UserRepo.GetByUuid(id)
-	
+
 	if err != nil {
 		return nil, models.NewErrorMessage("User", "Not found")
 	}
-	
+
 	return mapper.UserToResponse(userDb), nil
 }
 
@@ -88,7 +88,7 @@ func (u *UserService) Delete(id uuid.UUID) *models.ErrorMessage {
 		return models.NewErrorMessage("User", "Not found")
 	}
 
-	if err := u.UserRepo.Delete(userDb.ID); err != nil {
+	if err := u.UserRepo.Delete(userDb); err != nil {
 		return models.NewErrorMessage("Database", err.Error())
 	}
 

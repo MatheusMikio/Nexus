@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/task"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
+	"github.com/MatheusMikio/Nexus/internal/domain/models/parameters"
 	"github.com/MatheusMikio/Nexus/internal/repository"
 	"github.com/google/uuid"
 )

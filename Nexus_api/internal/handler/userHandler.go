@@ -1,11 +1,15 @@
 package handler
 
-import(
+import (
 	"net/http"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
+	"github.com/MatheusMikio/Nexus/internal/helper"
 	"github.com/MatheusMikio/Nexus/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
+
 func GetAllUsers(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		params, err := helper.BindPaginationQuery(ctx)
@@ -24,8 +28,8 @@ func GetAllUsers(userService service.IUserService) gin.HandlerFunc {
 	}
 }
 
-func GetUserById(userService service.IUserService) gin.HandlerFunc{
-	return func(ctx *gin.Context){
+func GetUserById(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		idStr := ctx.Param("id")
 		id, err := uuid.Parse(idStr)
 		if err != nil {
@@ -33,9 +37,9 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc{
 			return
 		}
 
-		user, err := userService.GetById(id)
-		if err != nil{
-			SendError(ctx, http.StatusNotFound, err)
+		user, serviceErr := userService.GetById(id)
+		if serviceErr != nil {
+			SendError(ctx, http.StatusNotFound, serviceErr)
 			return
 		}
 

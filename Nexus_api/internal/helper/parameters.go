@@ -1,8 +1,8 @@
 package helper
 
 import (
-	"github.com/MatheusMikio/Nexus/internal/domain/dtos/parameters"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
+	"github.com/MatheusMikio/Nexus/internal/domain/models/parameters"
 	"github.com/gin-gonic/gin"
 )
 
