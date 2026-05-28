@@ -34,29 +34,18 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idStr := ctx.Param("id")
 		id, err := uuid.Parse(idStr)
+
 		if err != nil {
 			SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
 			return
 		}
 
-		authenticatedUserID, err := middlewares.GetUserID(ctx)
-		if err != nil {
-			SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
-			return
-		}
-
-		authenticatedUserRole, err := middlewares.GetUserRole(ctx)
-		if err != nil {
-			SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
-			return
-		}
-
-		if authenticatedUserRole != schemas.Admin && authenticatedUserID != id {
-			SendError(ctx, http.StatusForbidden, models.NewErrorMessage("Authorization", "insufficient permissions"))
+		if !authorizeSelfOrAdmin(ctx, id) {
 			return
 		}
 
 		user, serviceErr := userService.GetById(id)
+		
 		if serviceErr != nil {
 			SendError(ctx, http.StatusNotFound, serviceErr)
 			return
@@ -64,4 +53,25 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 
 		SendSuccess(ctx, http.StatusOK, user)
 	}
+}
+
+func authorizeSelfOrAdmin(ctx *gin.Context, targetUserID uuid.UUID) bool {
+	authenticatedUserID, err := middlewares.GetUserID(ctx)
+	if err != nil {
+		SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+		return false
+	}
+
+	authenticatedUserRole, err := middlewares.GetUserRole(ctx)
+	if err != nil {
+		SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+		return false
+	}
+
+	if authenticatedUserRole != schemas.Admin && authenticatedUserID != targetUserID {
+		SendError(ctx, http.StatusForbidden, models.NewErrorMessage("Authorization", "insufficient permissions"))
+		return false
+	}
+
+	return true
 }
