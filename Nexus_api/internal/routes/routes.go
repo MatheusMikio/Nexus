@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/MatheusMikio/Nexus/internal/container"
+	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/MatheusMikio/Nexus/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -11,12 +12,25 @@ func initRoutes(router *gin.Engine, container *container.Container) {
 
 	v1 := router.Group(basePath)
 	{
-		initPublicUserRoutes(v1, container.UserService)
+		publicRoutes := v1.Group("")
+		{
+			initPublicUserRoutes(publicRoutes, container.UserService)
+		}
 
 		v1.Use(middlewares.AuthMiddleware())
 
-		initUserRoutes(v1, container.UserService)
-		initGoalRoutes(v1, container.GoalService)
-		initTaskRoutes(v1, container.TaskService)
+		defaultRoutes := v1.Group("")
+		defaultRoutes.Use(middlewares.RoleMiddleware(schemas.Default, schemas.Admin))
+		{
+			initDefaultUserRoutes(defaultRoutes, container.UserService)
+			initGoalRoutes(defaultRoutes, container.GoalService)
+			initTaskRoutes(defaultRoutes, container.TaskService)
+		}
+
+		adminRoutes := v1.Group("")
+		adminRoutes.Use(middlewares.RoleMiddleware(schemas.Admin))
+		{
+			initAdminUserRoutes(adminRoutes, container.UserService)
+		}
 	}
 }
