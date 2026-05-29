@@ -1,6 +1,8 @@
 package factory
 
 import (
+	"time"
+
 	dto "github.com/MatheusMikio/Nexus/internal/domain/dtos/goal"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/MatheusMikio/Nexus/internal/domain/models/dates"
@@ -103,10 +105,18 @@ func buildGoalDates(gr *dto.Update, goalDb *schemas.Goal) (*dates.GoalDates, []*
 		finalizationForecast = *gr.EndDate
 	}
 
-	goalDates, errors := dates.NewGoalDates(startDate, finalizationForecast)
+	goalDates, errors := buildGoalDatesValue(startDate, finalizationForecast, gr.StartDate != nil)
 	if len(errors) > 0 {
 		return nil, errors
 	}
 
 	return &goalDates, nil
+}
+
+func buildGoalDatesValue(startDate, finalizationForecast time.Time, startDateChanged bool) (dates.GoalDates, []*models.ErrorMessage) {
+	if startDateChanged {
+		return dates.NewGoalDates(startDate, finalizationForecast)
+	}
+
+	return dates.NewGoalDatesFromExistingStart(startDate, finalizationForecast)
 }

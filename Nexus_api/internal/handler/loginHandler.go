@@ -35,6 +35,6 @@ func LoginHandler(service service.ILoginService) gin.HandlerFunc {
 			return
 		}
 
-		response.SendAuthSuccess(ctx, http.StatusOK, user.AccessToken, user.ExpiresIn, user.User)
+		response.SendAuthSuccess(ctx, http.StatusOK, user)
 	}
 }

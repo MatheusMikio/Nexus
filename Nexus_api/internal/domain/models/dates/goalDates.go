@@ -12,6 +12,14 @@ type GoalDates struct {
 }
 
 func NewGoalDates(startDate time.Time, finalizationForecast time.Time) (GoalDates, []*models.ErrorMessage) {
+	return newGoalDates(startDate, finalizationForecast, true)
+}
+
+func NewGoalDatesFromExistingStart(startDate time.Time, finalizationForecast time.Time) (GoalDates, []*models.ErrorMessage) {
+	return newGoalDates(startDate, finalizationForecast, false)
+}
+
+func newGoalDates(startDate time.Time, finalizationForecast time.Time, validateCurrentDate bool) (GoalDates, []*models.ErrorMessage) {
 	errors := make([]*models.ErrorMessage, 0)
 
 	startDateOnly := dateOnly(startDate)
@@ -26,7 +34,7 @@ func NewGoalDates(startDate time.Time, finalizationForecast time.Time) (GoalDate
 		errors = append(errors, models.NewErrorMessage("FinalizationForecast", "is required"))
 	}
 
-	if !startDate.IsZero() && startDateOnly.Before(today) {
+	if validateCurrentDate && !startDate.IsZero() && startDateOnly.Before(today) {
 		errors = append(errors, models.NewErrorMessage("StartDate", "must be greater than or equal to current date"))
 	}
 

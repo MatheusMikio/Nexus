@@ -31,11 +31,6 @@ func SendErrors(ctx *gin.Context, statusCode int, errs []*models.ErrorMessage) {
 	})
 }
 
-func SendAuthSuccess(ctx *gin.Context, statusCode int, accessToken string, expiresIn int64, user auth.AuthUser) {
-	ctx.JSON(statusCode, gin.H{
-		"accessToken": accessToken,
-		"tokenType":   "Bearer",
-		"expiresIn":   expiresIn,
-		"user":        user,
-	})
+func SendAuthSuccess(ctx *gin.Context, statusCode int, data *auth.LoginResponse) {
+	ctx.JSON(statusCode, data)
 }
