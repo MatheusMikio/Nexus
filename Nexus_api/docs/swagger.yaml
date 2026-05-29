@@ -1,5 +1,32 @@
 basePath: /api/v1
 definitions:
+  auth.AuthUser:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  auth.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.LoginResponse:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      tokenType:
+        type: string
+      user:
+        $ref: '#/definitions/auth.AuthUser'
+    type: object
   goal.Request:
     properties:
       description:
@@ -93,6 +120,35 @@ info:
   title: Nexus API
   version: "1.0"
 paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credenciais do usuario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Autenticar usuario
+      tags:
+      - Auth
   /goals:
     get:
       parameters:

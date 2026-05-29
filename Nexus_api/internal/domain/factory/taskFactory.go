@@ -152,7 +152,14 @@ func buildTaskDates(tr *dto.Update, taskDb *schemas.Task, goal *schemas.Goal, st
 }
 
 func appendTaskStartDateError(errors []*models.ErrorMessage, startDate *time.Time) []*models.ErrorMessage {
-	if startDate != nil && startDate.Before(time.Now()) {
+	if startDate == nil {
+		return errors
+	}
+
+	startDateOnly := dateOnly(*startDate)
+	today := dateOnly(time.Now().In(startDate.Location()))
+
+	if startDateOnly.Before(today) {
 		return append(errors, models.NewErrorMessage("StartDate", "must be greater than or equal to current date"))
 	}
 
@@ -178,4 +185,3 @@ func dateOnly(value time.Time) time.Time {
 	year, month, day := value.Date()
 	return time.Date(year, month, day, 0, 0, 0, 0, value.Location())
 }
-
