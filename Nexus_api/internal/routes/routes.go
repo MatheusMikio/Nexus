@@ -16,6 +16,7 @@ func initRoutes(router *gin.Engine, container *container.Container) {
 		{
 			initDocsRoutes(publicRoutes)
 			initPublicUserRoutes(publicRoutes, container.UserService)
+			initLoginRoutes(publicRoutes, container.LoginService)
 		}
 
 		v1.Use(middlewares.AuthMiddleware())

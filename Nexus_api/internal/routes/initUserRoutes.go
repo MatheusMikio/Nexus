@@ -6,25 +6,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func initPublicUserRoutes(router *gin.RouterGroup, userService service.IUserService) {
+func initPublicUserRoutes(router *gin.RouterGroup, service service.IUserService) {
 	user := router.Group("/user")
 	{
-		user.POST("", handler.Create(userService))
+		user.POST("", handler.CreateUser(service))
 	}
 }
 
-func initDefaultUserRoutes(router *gin.RouterGroup, userService service.IUserService) {
+func initDefaultUserRoutes(router *gin.RouterGroup, service service.IUserService) {
 	user := router.Group("/user")
 	{
-		user.GET("/:id", handler.GetUserById(userService))
-		user.PUT("/:id", handler.Update(userService))
-		user.DELETE("/:id", handler.Delete(userService))
+		user.GET("/:id", handler.GetUserById(service))
+		user.PUT("/:id", handler.UpdateUser(service))
+		user.DELETE("/:id", handler.DeleteUser(service))
 	}
 }
 
-func initAdminUserRoutes(router *gin.RouterGroup, userService service.IUserService) {
+func initAdminUserRoutes(router *gin.RouterGroup, service service.IUserService) {
 	user := router.Group("/user")
 	{
-		user.GET("", handler.GetAllUsers(userService))
+		user.GET("", handler.GetAllUsers(service))
 	}
 }

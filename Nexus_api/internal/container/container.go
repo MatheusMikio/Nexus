@@ -7,9 +7,10 @@ import (
 )
 
 type Container struct {
-	GoalService service.IGoalService
-	TaskService service.ITaskService
-	UserService service.IUserService
+	GoalService  service.IGoalService
+	TaskService  service.ITaskService
+	UserService  service.IUserService
+	LoginService service.ILoginService
 }
 
 func NewContainer(db *gorm.DB) *Container {
@@ -17,13 +18,10 @@ func NewContainer(db *gorm.DB) *Container {
 	taskRepo := repository.NewTaskRepository(db)
 	userRepo := repository.NewUserRepository(db)
 
-	userService := service.NewUserService(userRepo)
-	goalService := service.NewGoalService(goalRepo, userRepo)
-	taskService := service.NewTaskService(taskRepo, userRepo)
-
 	return &Container{
-		GoalService: goalService,
-		TaskService: taskService,
-		UserService: userService,
+		GoalService:  service.NewGoalService(goalRepo, userRepo),
+		TaskService:  service.NewTaskService(taskRepo, goalRepo, userRepo),
+		UserService:  service.NewUserService(userRepo),
+		LoginService: service.NewLoginService(userRepo),
 	}
 }
