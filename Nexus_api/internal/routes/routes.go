@@ -14,6 +14,7 @@ func initRoutes(router *gin.Engine, container *container.Container) {
 	{
 		publicRoutes := v1.Group("")
 		{
+			initDocsRoutes(publicRoutes)
 			initPublicUserRoutes(publicRoutes, container.UserService)
 		}
 
@@ -23,8 +24,8 @@ func initRoutes(router *gin.Engine, container *container.Container) {
 		defaultRoutes.Use(middlewares.RoleMiddleware(schemas.Default, schemas.Admin))
 		{
 			initDefaultUserRoutes(defaultRoutes, container.UserService)
-			// initGoalRoutes(defaultRoutes, container.GoalService)
-			// initTaskRoutes(defaultRoutes, container.TaskService)
+			initDefaultGoalRoutes(defaultRoutes, container.GoalService)
+			initDefaultTaskRoutes(defaultRoutes, container.TaskService)
 		}
 
 		adminRoutes := v1.Group("")

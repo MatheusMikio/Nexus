@@ -6,11 +6,18 @@ import (
 )
 
 func UserToResponse(user *schemas.User) *dto.Response {
+	goals := make([]uint, 0, len(user.Goals))
+
+	for _, goal := range user.Goals {
+		goals = append(goals, goal.ID)
+	}
+
 	return &dto.Response{
 		ID:       user.PublicID,
 		FullName: user.GetName(),
 		Email:    user.GetEmail(),
 		Phone:    user.GetPhone(),
+		Goals:    goals,
 	}
 }
 

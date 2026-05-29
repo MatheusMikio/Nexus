@@ -14,11 +14,11 @@ import (
 )
 
 type IUserService interface {
-	GetAll(parameters parameters.PaginationQuery) ([]*user.Response, *models.ErrorMessage)
-	GetById(id uuid.UUID) (*user.Response, *models.ErrorMessage)
-	Create(user *user.Request) []*models.ErrorMessage
-	Update(id uuid.UUID, user *user.Update) []*models.ErrorMessage
-	Delete(id uuid.UUID) *models.ErrorMessage
+	GetAllUsers(parameters parameters.PaginationQuery) ([]*user.Response, *models.ErrorMessage)
+	GetUserById(id uuid.UUID) (*user.Response, *models.ErrorMessage)
+	CreateUser(user *user.Request) []*models.ErrorMessage
+	UpdateUser(id uuid.UUID, user *user.Update) []*models.ErrorMessage
+	DeleteUser(id uuid.UUID) *models.ErrorMessage
 }
 
 type UserService struct {
@@ -31,8 +31,8 @@ func NewUserService(userRepo repository.IUserRepository) IUserService {
 	}
 }
 
-func (u *UserService) GetAll(parameters parameters.PaginationQuery) ([]*user.Response, *models.ErrorMessage) {
-	usersDb, err := u.UserRepo.GetAll(parameters.Page, parameters.Size)
+func (u *UserService) GetAllUsers(parameters parameters.PaginationQuery) ([]*user.Response, *models.ErrorMessage) {
+	usersDb, err := u.UserRepo.GetAllWithGoals(parameters.Page, parameters.Size)
 
 	if err != nil {
 		return nil, models.NewErrorMessage("Database", err.Error())
@@ -41,8 +41,8 @@ func (u *UserService) GetAll(parameters parameters.PaginationQuery) ([]*user.Res
 	return mapper.UsersToResponse(usersDb), nil
 }
 
-func (u *UserService) GetById(id uuid.UUID) (*user.Response, *models.ErrorMessage) {
-	userDb, err := u.UserRepo.GetByUuid(id)
+func (u *UserService) GetUserById(id uuid.UUID) (*user.Response, *models.ErrorMessage) {
+	userDb, err := u.UserRepo.GetByUuidWithGoals(id)
 
 	if err != nil {
 		return nil, userFindError(err)
@@ -51,7 +51,7 @@ func (u *UserService) GetById(id uuid.UUID) (*user.Response, *models.ErrorMessag
 	return mapper.UserToResponse(userDb), nil
 }
 
-func (u *UserService) Create(ur *user.Request) []*models.ErrorMessage {
+func (u *UserService) CreateUser(ur *user.Request) []*models.ErrorMessage {
 	user, errors := factory.NewUserFromRequest(ur)
 
 	if len(errors) > 0 {
@@ -65,7 +65,7 @@ func (u *UserService) Create(ur *user.Request) []*models.ErrorMessage {
 	return nil
 }
 
-func (u *UserService) Update(id uuid.UUID, user *user.Update) []*models.ErrorMessage {
+func (u *UserService) UpdateUser(id uuid.UUID, user *user.Update) []*models.ErrorMessage {
 	userDb, err := u.UserRepo.GetByUuid(id)
 
 	if err != nil {
@@ -84,7 +84,7 @@ func (u *UserService) Update(id uuid.UUID, user *user.Update) []*models.ErrorMes
 	return nil
 }
 
-func (u *UserService) Delete(id uuid.UUID) *models.ErrorMessage {
+func (u *UserService) DeleteUser(id uuid.UUID) *models.ErrorMessage {
 	userDb, err := u.UserRepo.GetByUuid(id)
 
 	if err != nil {
