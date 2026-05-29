@@ -14,7 +14,7 @@ type Response struct {
 	Name        string     `json:"name"`
 	Description string     `json:"description"`
 	StartDate   time.Time  `json:"startDate"`
-	EndDate     *time.Time `json:"endDate"`
+	EndDate     time.Time  `json:"endDate"`
 	Status      string     `json:"status"`
 	TaskIDs     []uint     `json:"tasks"`
 }

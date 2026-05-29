@@ -7,7 +7,8 @@ type AuthUser struct {
 }
 
 type LoginResponse struct {
-	AccessToken string   `json:"access_token"`
-	ExpiresIn   int64    `json:"expires_in"`
+	AccessToken string   `json:"accessToken"`
+	TokenType   string   `json:"tokenType"`
+	ExpiresIn   int64    `json:"expiresIn"`
 	User        AuthUser `json:"user"`
 }

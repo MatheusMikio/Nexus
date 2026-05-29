@@ -1,16 +1,13 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/goal"
+	"github.com/MatheusMikio/Nexus/internal/domain/factory"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
-	"github.com/MatheusMikio/Nexus/internal/domain/models/dates"
 	"github.com/MatheusMikio/Nexus/internal/domain/models/parameters"
-	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
+	"github.com/MatheusMikio/Nexus/internal/helper"
 	"github.com/MatheusMikio/Nexus/internal/mapper"
 	"github.com/MatheusMikio/Nexus/internal/repository"
-	"github.com/MatheusMikio/Nexus/internal/repository/base"
 	"github.com/google/uuid"
 )
 
@@ -46,12 +43,12 @@ func (g *GoalService) GetAllGoals(parameters parameters.PaginationQuery, userId 
 func (g *GoalService) GetById(id uint, userId uuid.UUID) (*goal.Response, *models.ErrorMessage) {
 	userDb, err := g.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return nil, userFindError(err)
+		return nil, helper.FindError("User", err)
 	}
 
 	goalDb, err := g.GoalRepository.GetByIDAndUserID(id, userDb.ID)
 	if err != nil {
-		return nil, goalFindError(err)
+		return nil, helper.FindError("Goal", err)
 	}
 
 	return mapper.GoalToResponse(goalDb), nil
@@ -60,20 +57,10 @@ func (g *GoalService) GetById(id uint, userId uuid.UUID) (*goal.Response, *model
 func (g *GoalService) Create(gr *goal.Request, userId uuid.UUID) []*models.ErrorMessage {
 	userDb, err := g.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return []*models.ErrorMessage{userFindError(err)}
+		return []*models.ErrorMessage{helper.FindError("User", err)}
 	}
 
-	goalName, errs := models.NewGoalName(gr.Name)
-	if len(errs) > 0 {
-		return errs
-	}
-
-	goalDates, errs := dates.NewGoalDates(gr.StartDate, &gr.EndDate)
-	if len(errs) > 0 {
-		return errs
-	}
-
-	goalDb, errs := schemas.NewGoal(goalName, gr.Description, goalDates, userDb.ID)
+	goalDb, errs := factory.NewGoalFromRequest(gr, userDb.ID)
 	if len(errs) > 0 {
 		return errs
 	}
@@ -88,40 +75,17 @@ func (g *GoalService) Create(gr *goal.Request, userId uuid.UUID) []*models.Error
 func (g *GoalService) Update(id uint, gr *goal.Update, userId uuid.UUID) []*models.ErrorMessage {
 	userDb, err := g.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return []*models.ErrorMessage{userFindError(err)}
+		return []*models.ErrorMessage{helper.FindError("User", err)}
 	}
 
 	goalDb, err := g.GoalRepository.GetByIDAndUserID(id, userDb.ID)
 	if err != nil {
-		return []*models.ErrorMessage{goalFindError(err)}
+		return []*models.ErrorMessage{helper.FindError("Goal", err)}
 	}
 
-	if gr.Name != nil {
-		goalName, errs := models.NewGoalName(*gr.Name)
-		if len(errs) > 0 {
-			return errs
-		}
-		goalDb.GoalName = goalName
-	}
-
-	if gr.Description != nil {
-		goalDb.Description = *gr.Description
-	}
-
-	if gr.StartDate != nil {
-		goalDb.Dates.StartDate = *gr.StartDate
-	}
-
-	if gr.EndDate != nil {
-		goalDb.Dates.FinalizationForecast = gr.EndDate
-	}
-
-	if gr.Status != nil {
-		status, errMessage := parseGoalStatus(*gr.Status)
-		if errMessage != nil {
-			return []*models.ErrorMessage{errMessage}
-		}
-		goalDb.Status = status
+	errs := factory.BuildGoalUpdate(gr, goalDb)
+	if len(errs) > 0 {
+		return errs
 	}
 
 	if err := g.GoalRepository.Update(goalDb); err != nil {
@@ -134,12 +98,12 @@ func (g *GoalService) Update(id uint, gr *goal.Update, userId uuid.UUID) []*mode
 func (g *GoalService) Delete(id uint, userId uuid.UUID) *models.ErrorMessage {
 	userDb, err := g.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return userFindError(err)
+		return helper.FindError("User", err)
 	}
 
 	goalDb, err := g.GoalRepository.GetByIDAndUserID(id, userDb.ID)
 	if err != nil {
-		return goalFindError(err)
+		return helper.FindError("Goal", err)
 	}
 
 	if err := g.GoalRepository.Delete(goalDb); err != nil {
@@ -147,21 +111,4 @@ func (g *GoalService) Delete(id uint, userId uuid.UUID) *models.ErrorMessage {
 	}
 
 	return nil
-}
-
-func parseGoalStatus(status string) (schemas.GoalStatus, *models.ErrorMessage) {
-	switch schemas.GoalStatus(status) {
-	case schemas.GoalPending, schemas.GoalCompleted, schemas.GoalCanceled, schemas.GoalLate:
-		return schemas.GoalStatus(status), nil
-	default:
-		return "", models.NewErrorMessage("Status", "invalid")
-	}
-}
-
-func goalFindError(err error) *models.ErrorMessage {
-	if errors.Is(err, base.ErrNotFound) {
-		return models.NewErrorMessage("Goal", "Not found")
-	}
-
-	return models.NewErrorMessage("Database", err.Error())
 }

@@ -6,26 +6,6 @@ import (
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 )
 
-type GoalDates struct {
-	StartDate            time.Time `gorm:"not null"`
-	FinalizationForecast *time.Time
-}
-
-func NewGoalDates(startDate time.Time, finalizationForecast *time.Time) (GoalDates, []*models.ErrorMessage) {
-	return GoalDates{
-		StartDate:            startDate,
-		FinalizationForecast: finalizationForecast,
-	}, nil
-}
-
-func (g *GoalDates) GetStartDateValue() time.Time {
-	return g.StartDate
-}
-
-func (g *GoalDates) GetFinalDateValue() *time.Time {
-	return g.FinalizationForecast
-}
-
 type TaskDates struct {
 	StartDate        *time.Time
 	FinalizationDate *time.Time
@@ -33,7 +13,20 @@ type TaskDates struct {
 }
 
 func NewTaskDates(startDate *time.Time, finalizationDate *time.Time) (TaskDates, []*models.ErrorMessage) {
+	errors := make([]*models.ErrorMessage, 0)
 	var timeSpent *int64
+
+	if startDate == nil && finalizationDate != nil {
+		errors = append(errors, models.NewErrorMessage("StartDate", "is required when finalization date is informed"))
+	}
+
+	if startDate != nil && finalizationDate != nil && !finalizationDate.After(*startDate) {
+		errors = append(errors, models.NewErrorMessage("FinalizationDate", "must be greater than start date"))
+	}
+
+	if len(errors) > 0 {
+		return TaskDates{}, errors
+	}
 
 	if startDate != nil && finalizationDate != nil {
 		ts := int64(finalizationDate.Sub(*startDate).Minutes())

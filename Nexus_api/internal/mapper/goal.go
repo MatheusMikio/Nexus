@@ -6,20 +6,14 @@ import (
 )
 
 func GoalToResponse(goal *schemas.Goal) *dto.Response {
-	tasks := make([]uint, 0, len(goal.Tasks))
-
-	for _, task := range goal.Tasks {
-		tasks = append(tasks, task.ID)
-	}
-
 	return &dto.Response{
 		ID:          goal.ID,
 		Name:        goal.GetName(),
-		Description: goal.Description,
+		Description: goal.GetDescription(),
 		StartDate:   goal.GetStartDate(),
 		EndDate:     goal.GetFinalDate(),
-		Status:      string(goal.Status),
-		TaskIDs:     tasks,
+		Status:      string(goal.GetStatus()),
+		TaskIDs:     goal.GetTaskIDs(),
 	}
 }
 

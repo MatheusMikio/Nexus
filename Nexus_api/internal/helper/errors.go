@@ -1,9 +1,11 @@
 package helper
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
+	"github.com/MatheusMikio/Nexus/internal/repository/base"
 )
 
 func AppendErrors(target []*models.ErrorMessage, newErrors []*models.ErrorMessage) []*models.ErrorMessage {
@@ -23,4 +25,12 @@ func ErrorStatusCode(err *models.ErrorMessage) int {
 	}
 
 	return http.StatusBadRequest
+}
+
+func FindError(entity string, err error) *models.ErrorMessage {
+	if errors.Is(err, base.ErrNotFound) {
+		return models.NewErrorMessage(entity, "Not found")
+	}
+
+	return models.NewErrorMessage("Database", err.Error())
 }

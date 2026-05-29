@@ -19,11 +19,11 @@ import (
 // @Security BearerAuth
 // @Param page query int false "Pagina"
 // @Param size query int false "Tamanho da pagina"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 403 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {array} userdto.Response
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 403 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /user [get]
 func GetAllUsers(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -49,12 +49,12 @@ func GetAllUsers(userService service.IUserService) gin.HandlerFunc {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "ID publico do usuario"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 403 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} userdto.Response
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 403 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /user/{id} [get]
 func GetUserById(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -87,9 +87,9 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 // @Accept json
 // @Produce json
 // @Param request body userdto.Request true "Dados do usuario"
-// @Success 201 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 201
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /user [post]
 func CreateUser(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -122,12 +122,12 @@ func CreateUser(userService service.IUserService) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param id path string true "ID publico do usuario"
 // @Param request body userdto.Update true "Dados do usuario"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 403 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 403 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /user/{id} [put]
 func UpdateUser(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -168,12 +168,12 @@ func UpdateUser(userService service.IUserService) gin.HandlerFunc {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "ID publico do usuario"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 403 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 403 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /user/{id} [delete]
 func DeleteUser(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

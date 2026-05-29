@@ -10,6 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// LoginHandler godoc
+// @Summary Autenticar usuario
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body auth.Login true "Credenciais do usuario"
+// @Success 200 {object} auth.LoginResponse
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 422 {object} models.ErrorMessage
+// @Router /auth [post]
 func LoginHandler(service service.ILoginService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		request := &auth.Login{}
@@ -25,6 +35,6 @@ func LoginHandler(service service.ILoginService) gin.HandlerFunc {
 			return
 		}
 
-		response.SendAuthSuccess(ctx, http.StatusOK, user.AccessToken, user.ExpiresIn, user.User)
+		response.SendAuthSuccess(ctx, http.StatusOK, user)
 	}
 }

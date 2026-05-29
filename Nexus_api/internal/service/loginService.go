@@ -40,6 +40,7 @@ func (l *LoginService) Login(email string, password string) (*auth.LoginResponse
 
 	return &auth.LoginResponse{
 		AccessToken: accessToken,
+		TokenType:   "Bearer",
 		ExpiresIn:   int64((2 * time.Hour).Seconds()),
 		User: auth.AuthUser{
 			Name:  userDb.GetName(),

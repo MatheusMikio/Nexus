@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS goals (
     name varchar(150) NOT NULL,
     description text DEFAULT 'Descrição não informada',
     start_date timestamptz NOT NULL,
-    finalization_forecast timestamptz,
+    finalization_forecast timestamptz NOT NULL,
     status goal_status NOT NULL DEFAULT 'Pendente',
     user_id bigint NOT NULL,
     CONSTRAINT fk_users_goals FOREIGN KEY (user_id) REFERENCES users (id)

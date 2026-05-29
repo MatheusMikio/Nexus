@@ -29,6 +29,12 @@ type Goal struct {
 }
 
 func NewGoal(goal models.GoalName, description string, dates dates.GoalDates, userID uint) (*Goal, []*models.ErrorMessage) {
+	if userID == 0 {
+		return nil, []*models.ErrorMessage{
+			models.NewErrorMessage("UserID", "is required"),
+		}
+	}
+
 	return &Goal{
 		GoalName:    goal,
 		Description: description,
@@ -42,10 +48,48 @@ func (g *Goal) GetName() string {
 	return g.GoalName.GetValue()
 }
 
+func (g *Goal) GetDescription() string {
+	return g.Description
+}
+
+func (g *Goal) GetStatus() GoalStatus {
+	return g.Status
+}
+
 func (g *Goal) GetStartDate() time.Time {
 	return g.Dates.GetStartDateValue()
 }
 
-func (g *Goal) GetFinalDate() *time.Time {
+func (g *Goal) GetFinalDate() time.Time {
 	return g.Dates.GetFinalDateValue()
+}
+
+func (g *Goal) GetTaskIDs() []uint {
+	taskIDs := make([]uint, 0, len(g.Tasks))
+
+	for _, task := range g.Tasks {
+		taskIDs = append(taskIDs, task.ID)
+	}
+
+	return taskIDs
+}
+
+func (g *Goal) GetTasks() []Task {
+	return g.Tasks
+}
+
+func (g *Goal) ChangeName(goalName models.GoalName) {
+	g.GoalName = goalName
+}
+
+func (g *Goal) ChangeDescription(description string) {
+	g.Description = description
+}
+
+func (g *Goal) ChangeStatus(status GoalStatus) {
+	g.Status = status
+}
+
+func (g *Goal) ChangeDates(goalDates dates.GoalDates) {
+	g.Dates = goalDates
 }
