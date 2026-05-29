@@ -1,9 +1,10 @@
-package handler
+package response
 
 import (
 	"net/http"
 
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/auth"
+	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,9 +19,15 @@ func SendSuccess(ctx *gin.Context, statusCode int, data any) {
 	})
 }
 
-func SendError(ctx *gin.Context, statusCode int, errors any) {
+func SendError(ctx *gin.Context, statusCode int, err *models.ErrorMessage) {
 	ctx.JSON(statusCode, gin.H{
-		"errors": errors,
+		"errors": []any{err},
+	})
+}
+
+func SendErrors(ctx *gin.Context, statusCode int, errs []*models.ErrorMessage) {
+	ctx.JSON(statusCode, gin.H{
+		"errors": errs,
 	})
 }
 

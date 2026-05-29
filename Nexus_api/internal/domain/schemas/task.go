@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"time"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/MatheusMikio/Nexus/internal/domain/models/dates"
 	"gorm.io/gorm"
@@ -32,4 +34,20 @@ func NewTask(name models.GoalName, description string, dates dates.TaskDates, go
 		GoalID:      goalID,
 		Status:      TaskPending,
 	}, nil
+}
+
+func (t *Task) GetName() string {
+	return t.Name.GetValue()
+}
+
+func (t *Task) GetStartDate() *time.Time {
+	return t.Dates.GetStartDate()
+}
+
+func (t *Task) GetFinalizationDate() *time.Time {
+	return t.Dates.GetFinalizationDate()
+}
+
+func (t *Task) GetTimeSpent() *int64 {
+	return t.Dates.GetTimeSpent()
 }

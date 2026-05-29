@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/MatheusMikio/Nexus/internal/repository/base"
 	"github.com/google/uuid"
@@ -28,6 +30,10 @@ func NewUserRepository(db *gorm.DB) IUserRepository {
 func (ur *UserRepository) GetByUuid(uuid uuid.UUID) (*schemas.User, error) {
 	var user schemas.User
 	if err := ur.Db.Where("public_id = ?", uuid).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, base.ErrNotFound
+		}
+
 		return nil, err
 	}
 	return &user, nil
@@ -36,6 +42,10 @@ func (ur *UserRepository) GetByUuid(uuid uuid.UUID) (*schemas.User, error) {
 func (ur *UserRepository) GetByEmail(email string) (*schemas.User, error) {
 	var user schemas.User
 	if err := ur.Db.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, base.ErrNotFound
+		}
+
 		return nil, err
 	}
 	return &user, nil

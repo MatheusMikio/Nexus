@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"time"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/MatheusMikio/Nexus/internal/domain/models/dates"
 	"gorm.io/gorm"
@@ -34,4 +36,16 @@ func NewGoal(goal models.GoalName, description string, dates dates.GoalDates, us
 		Status:      GoalPending,
 		UserID:      userID,
 	}, nil
+}
+
+func (g *Goal) GetName() string {
+	return g.GoalName.GetValue()
+}
+
+func (g *Goal) GetStartDate() time.Time {
+	return g.Dates.GetStartDateValue()
+}
+
+func (g *Goal) GetFinalDate() *time.Time {
+	return g.Dates.GetFinalDateValue()
 }

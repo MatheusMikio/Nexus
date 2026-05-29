@@ -11,17 +11,25 @@ type GoalDates struct {
 	FinalizationForecast *time.Time
 }
 
-type TaskDates struct {
-	StartDate        *time.Time
-	FinalizationDate *time.Time
-	TimeSpent        *int64
-}
-
 func NewGoalDates(startDate time.Time, finalizationForecast *time.Time) (GoalDates, []*models.ErrorMessage) {
 	return GoalDates{
 		StartDate:            startDate,
 		FinalizationForecast: finalizationForecast,
 	}, nil
+}
+
+func (g *GoalDates) GetStartDateValue() time.Time {
+	return g.StartDate
+}
+
+func (g *GoalDates) GetFinalDateValue() *time.Time {
+	return g.FinalizationForecast
+}
+
+type TaskDates struct {
+	StartDate        *time.Time
+	FinalizationDate *time.Time
+	TimeSpent        *int64
 }
 
 func NewTaskDates(startDate *time.Time, finalizationDate *time.Time) (TaskDates, []*models.ErrorMessage) {
@@ -37,4 +45,16 @@ func NewTaskDates(startDate *time.Time, finalizationDate *time.Time) (TaskDates,
 		FinalizationDate: finalizationDate,
 		TimeSpent:        timeSpent,
 	}, nil
+}
+
+func (t *TaskDates) GetStartDate() *time.Time {
+	return t.StartDate
+}
+
+func (t *TaskDates) GetFinalizationDate() *time.Time {
+	return t.FinalizationDate
+}
+
+func (t *TaskDates) GetTimeSpent() *int64 {
+	return t.TimeSpent
 }

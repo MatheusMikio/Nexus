@@ -9,3 +9,7 @@ func NewGoalName(value string) (GoalName, []*ErrorMessage) {
 		Value: value,
 	}, nil
 }
+
+func (g *GoalName) GetValue() string {
+	return g.Value
+}

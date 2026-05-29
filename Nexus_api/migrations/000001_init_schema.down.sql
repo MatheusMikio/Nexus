@@ -4,3 +4,4 @@ DROP TABLE IF EXISTS users;
 
 DROP TYPE IF EXISTS task_status;
 DROP TYPE IF EXISTS goal_status;
+DROP TYPE IF EXISTS role;
