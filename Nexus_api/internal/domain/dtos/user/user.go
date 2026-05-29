@@ -16,7 +16,7 @@ type Response struct {
 	FullName string    `json:"fullName"`
 	Email    string    `json:"email"`
 	Phone    string    `json:"phone"`
-	Goals    []uint `json:"goals"`
+	Goals    []uint    `json:"goals"`
 }
 
 type Update struct {

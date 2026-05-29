@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/MatheusMikio/Nexus/internal/repository/base"
 	"gorm.io/gorm"
@@ -9,6 +11,7 @@ import (
 type ITaskRepository interface {
 	base.ICrudRepository[schemas.Task]
 	GetAllByGoalID(page, size int, goalID uint, userID uint) ([]*schemas.Task, error)
+	GetByIDAndGoalIDAndUserID(taskID, goalID, userID uint) (*schemas.Task, error)
 }
 
 type TaskRepository struct {
@@ -39,4 +42,23 @@ func (tr *TaskRepository) GetAllByGoalID(page, size int, goalID uint, userID uin
 	}
 
 	return tasks, nil
+}
+
+func (tr *TaskRepository) GetByIDAndGoalIDAndUserID(taskID, goalID, userID uint) (*schemas.Task, error) {
+	var task schemas.Task
+
+	err := tr.Db.
+		Joins("JOIN goals ON goals.id = tasks.goal_id").
+		Where("tasks.id = ? AND tasks.goal_id = ? AND goals.user_id = ?", taskID, goalID, userID).
+		First(&task).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, base.ErrNotFound
+		}
+
+		return nil, err
+	}
+
+	return &task, nil
 }

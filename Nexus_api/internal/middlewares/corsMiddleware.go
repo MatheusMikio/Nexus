@@ -12,9 +12,13 @@ import (
 
 func CorsMiddleware() gin.HandlerFunc {
 	allowedOriginsStr := os.Getenv("CORS_ALLOWED_ORIGINS")
-	var allowedOrigins []string
-	if allowedOriginsStr != "" {
-		allowedOrigins = strings.Split(allowedOriginsStr, ",")
+	allowedOrigins := []string{
+		"http://localhost:3000",
+		"http://localhost:5173",
+	}
+
+	if strings.TrimSpace(allowedOriginsStr) != "" {
+		allowedOrigins = splitAllowedOrigins(allowedOriginsStr)
 	}
 
 	return cors.New(cors.Config{
@@ -25,4 +29,17 @@ func CorsMiddleware() gin.HandlerFunc {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	})
+}
+
+func splitAllowedOrigins(value string) []string {
+	parts := strings.Split(value, ",")
+	origins := make([]string, 0, len(parts))
+
+	for _, part := range parts {
+		if origin := strings.TrimSpace(part); origin != "" {
+			origins = append(origins, origin)
+		}
+	}
+
+	return origins
 }

@@ -1,0 +1,696 @@
+basePath: /api/v1
+definitions:
+  goal.Request:
+    properties:
+      description:
+        type: string
+      endDate:
+        type: string
+      name:
+        type: string
+      startDate:
+        type: string
+    type: object
+  goal.Update:
+    properties:
+      description:
+        type: string
+      endDate:
+        type: string
+      name:
+        type: string
+      startDate:
+        type: string
+      status:
+        type: string
+    type: object
+  models.ErrorMessage:
+    properties:
+      message:
+        type: string
+      property:
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      errors:
+        items:
+          $ref: '#/definitions/models.ErrorMessage'
+        type: array
+    type: object
+  response.SuccessResponse:
+    properties:
+      data: {}
+    type: object
+  task.Request:
+    properties:
+      description:
+        type: string
+      finalizationDate:
+        type: string
+      name:
+        type: string
+      startDate:
+        type: string
+    type: object
+  task.Update:
+    properties:
+      description:
+        type: string
+      finalizationDate:
+        type: string
+      name:
+        type: string
+      startDate:
+        type: string
+      status:
+        type: string
+    type: object
+  user.Request:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  user.Update:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API para gerenciamento de usuarios, metas e tarefas.
+  title: Nexus API
+  version: "1.0"
+paths:
+  /goals:
+    get:
+      parameters:
+      - description: Pagina
+        in: query
+        name: page
+        type: integer
+      - description: Tamanho da pagina
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar metas do usuario autenticado
+      tags:
+      - Goals
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados da meta
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/goal.Request'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar meta
+      tags:
+      - Goals
+  /goals/{goalId}:
+    delete:
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover meta
+      tags:
+      - Goals
+    get:
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar meta por ID
+      tags:
+      - Goals
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      - description: Dados da meta
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/goal.Update'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar meta
+      tags:
+      - Goals
+  /goals/{goalId}/tasks:
+    get:
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      - description: Pagina
+        in: query
+        name: page
+        type: integer
+      - description: Tamanho da pagina
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar tarefas de uma meta
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      - description: Dados da tarefa
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.Request'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar tarefa
+      tags:
+      - Tasks
+  /goals/{goalId}/tasks/{taskId}:
+    delete:
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      - description: ID da tarefa
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover tarefa
+      tags:
+      - Tasks
+    get:
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      - description: ID da tarefa
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar tarefa por ID
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID da meta
+        in: path
+        name: goalId
+        required: true
+        type: integer
+      - description: ID da tarefa
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Dados da tarefa
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.Update'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar tarefa
+      tags:
+      - Tasks
+  /user:
+    get:
+      parameters:
+      - description: Pagina
+        in: query
+        name: page
+        type: integer
+      - description: Tamanho da pagina
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar usuarios
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do usuario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.Request'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Criar usuario
+      tags:
+      - Users
+  /user/{id}:
+    delete:
+      parameters:
+      - description: ID publico do usuario
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover usuario
+      tags:
+      - Users
+    get:
+      parameters:
+      - description: ID publico do usuario
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar usuario por ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID publico do usuario
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados do usuario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.Update'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar usuario
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: Digite "Bearer " seguido do token JWT.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
