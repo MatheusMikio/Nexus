@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"github.com/MatheusMikio/Nexus/internal/repository/base"
 	"github.com/google/uuid"
@@ -30,6 +32,7 @@ func (gr *GoalRepository) GetAllByUserId(page, size int, userId uuid.UUID) ([]*s
 	offset := (page - 1) * size
 
 	if err := gr.Db.
+		Preload("Tasks").
 		Joins("JOIN users ON users.id = goals.user_id").
 		Where("users.public_id = ?", userId).
 		Offset(offset).
@@ -41,15 +44,20 @@ func (gr *GoalRepository) GetAllByUserId(page, size int, userId uuid.UUID) ([]*s
 }
 
 func (r *GoalRepository) GetByIDAndUserID(goalID, userID uint) (*schemas.Goal, error) {
-    var goal schemas.Goal
+	var goal schemas.Goal
 
-    err := r.Db.
-        Where("id = ? AND user_id = ?", goalID, userID).
-        First(&goal).Error
+	err := r.Db.
+		Preload("Tasks").
+		Where("id = ? AND user_id = ?", goalID, userID).
+		First(&goal).Error
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, base.ErrNotFound
+		}
 
-    return &goal, nil
+		return nil, err
+	}
+
+	return &goal, nil
 }

@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     email varchar(255) NOT NULL,
     phone varchar(11) NOT NULL,
     role role NOT NULL DEFAULT 'DEFAULT',
-    password varchar(8) NOT NULL,
+    password varchar(255) NOT NULL,
     CONSTRAINT uni_users_public_id UNIQUE (public_id),
     CONSTRAINT uni_users_email UNIQUE (email)
 );

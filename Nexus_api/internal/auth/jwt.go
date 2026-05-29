@@ -15,7 +15,7 @@ const accessTokenTTL = 2 * time.Hour
 
 func GenerateAccessToken(userUuid uuid.UUID, userRole schemas.Role) (string, error) {
 	claims := auth.Claims{
-		ID: userUuid,
+		ID:   userUuid,
 		Role: userRole,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(accessTokenTTL)),

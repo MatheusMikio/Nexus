@@ -11,7 +11,9 @@ import (
 
 type IUserRepository interface {
 	base.ICrudRepository[schemas.User]
+	GetAllWithGoals(page, size int) ([]*schemas.User, error)
 	GetByUuid(uuid uuid.UUID) (*schemas.User, error)
+	GetByUuidWithGoals(uuid uuid.UUID) (*schemas.User, error)
 	GetByEmail(email string) (*schemas.User, error)
 }
 
@@ -30,6 +32,33 @@ func NewUserRepository(db *gorm.DB) IUserRepository {
 func (ur *UserRepository) GetByUuid(uuid uuid.UUID) (*schemas.User, error) {
 	var user schemas.User
 	if err := ur.Db.Where("public_id = ?", uuid).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, base.ErrNotFound
+		}
+
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (ur *UserRepository) GetAllWithGoals(page, size int) ([]*schemas.User, error) {
+	var users []*schemas.User
+	offset := (page - 1) * size
+
+	if err := ur.Db.
+		Preload("Goals").
+		Offset(offset).
+		Limit(size).
+		Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (ur *UserRepository) GetByUuidWithGoals(uuid uuid.UUID) (*schemas.User, error) {
+	var user schemas.User
+	if err := ur.Db.Preload("Goals").Where("public_id = ?", uuid).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, base.ErrNotFound
 		}
