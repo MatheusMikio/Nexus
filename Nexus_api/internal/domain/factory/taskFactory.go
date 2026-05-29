@@ -105,12 +105,14 @@ func buildTaskDates(tr *dto.Update, taskDb *schemas.Task, goal *schemas.Goal, st
 	}
 
 	startDate := taskDb.GetStartDate()
+	startDateChanged := false
 	if tr.StartDate != nil {
 		startDate = tr.StartDate
+		startDateChanged = hasTaskStartDateChanged(taskDb.GetStartDate(), tr.StartDate)
 	}
 
 	errors := make([]*models.ErrorMessage, 0)
-	if tr.StartDate != nil {
+	if startDateChanged {
 		errors = appendTaskStartDateError(errors, tr.StartDate)
 		errors = appendTaskGoalStartDateError(errors, tr.StartDate, goal)
 	}
@@ -149,6 +151,14 @@ func buildTaskDates(tr *dto.Update, taskDb *schemas.Task, goal *schemas.Goal, st
 	}
 
 	return &taskDates, nil
+}
+
+func hasTaskStartDateChanged(current *time.Time, next *time.Time) bool {
+	if current == nil || next == nil {
+		return current != next
+	}
+
+	return !current.Equal(*next)
 }
 
 func appendTaskStartDateError(errors []*models.ErrorMessage, startDate *time.Time) []*models.ErrorMessage {
