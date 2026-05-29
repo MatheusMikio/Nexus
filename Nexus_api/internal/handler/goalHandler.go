@@ -19,10 +19,10 @@ import (
 // @Security BearerAuth
 // @Param page query int false "Pagina"
 // @Param size query int false "Tamanho da pagina"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {array} goal.Response
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals [get]
 func GetAllGoals(service service.IGoalService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -54,11 +54,11 @@ func GetAllGoals(service service.IGoalService) gin.HandlerFunc {
 // @Produce json
 // @Security BearerAuth
 // @Param goalId path int true "ID da meta"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} goal.Response
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId} [get]
 func GetGoalById(service service.IGoalService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -91,10 +91,10 @@ func GetGoalById(service service.IGoalService) gin.HandlerFunc {
 // @Produce json
 // @Security BearerAuth
 // @Param request body goal.Request true "Dados da meta"
-// @Success 201 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 201
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals [post]
 func CreateGoal(service service.IGoalService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -133,11 +133,11 @@ func CreateGoal(service service.IGoalService) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param goalId path int true "ID da meta"
 // @Param request body goal.Update true "Dados da meta"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId} [put]
 func UpdateGoal(service service.IGoalService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -180,11 +180,11 @@ func UpdateGoal(service service.IGoalService) gin.HandlerFunc {
 // @Produce json
 // @Security BearerAuth
 // @Param goalId path int true "ID da meta"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId} [delete]
 func DeleteGoal(service service.IGoalService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

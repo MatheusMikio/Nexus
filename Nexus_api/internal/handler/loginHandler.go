@@ -17,8 +17,8 @@ import (
 // @Produce json
 // @Param request body auth.Login true "Credenciais do usuario"
 // @Success 200 {object} auth.LoginResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 422 {object} response.ErrorResponse
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 422 {object} models.ErrorMessage
 // @Router /auth [post]
 func LoginHandler(service service.ILoginService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

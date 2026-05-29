@@ -20,11 +20,11 @@ import (
 // @Param goalId path int true "ID da meta"
 // @Param page query int false "Pagina"
 // @Param size query int false "Tamanho da pagina"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {array} task.Response
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId}/tasks [get]
 func GetAllTasks(service service.ITaskService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -62,11 +62,11 @@ func GetAllTasks(service service.ITaskService) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param goalId path int true "ID da meta"
 // @Param taskId path int true "ID da tarefa"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} task.Response
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId}/tasks/{taskId} [get]
 func GetTaskById(service service.ITaskService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -104,11 +104,11 @@ func GetTaskById(service service.ITaskService) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param goalId path int true "ID da meta"
 // @Param request body task.Request true "Dados da tarefa"
-// @Success 201 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 201
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId}/tasks [post]
 func CreateTask(service service.ITaskService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -152,11 +152,11 @@ func CreateTask(service service.ITaskService) gin.HandlerFunc {
 // @Param goalId path int true "ID da meta"
 // @Param taskId path int true "ID da tarefa"
 // @Param request body task.Update true "Dados da tarefa"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId}/tasks/{taskId} [put]
 func UpdateTask(service service.ITaskService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -203,11 +203,11 @@ func UpdateTask(service service.ITaskService) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param goalId path int true "ID da meta"
 // @Param taskId path int true "ID da tarefa"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
 // @Router /goals/{goalId}/tasks/{taskId} [delete]
 func DeleteTask(service service.ITaskService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
