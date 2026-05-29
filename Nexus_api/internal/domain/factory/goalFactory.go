@@ -37,8 +37,14 @@ func BuildGoalUpdate(gr *dto.Update, goalDb *schemas.Goal) []*models.ErrorMessag
 		errors = append(errors, errMessage)
 	}
 
-	goalDates, err := buildGoalDates(gr, goalDb)
+	startDateChanged := hasGoalStartDateChanged(goalDb.GetStartDate(), gr.StartDate)
+
+	goalDates, err := buildGoalDates(gr, goalDb, startDateChanged)
 	errors = helper.AppendErrors(errors, err)
+
+	if startDateChanged {
+		errors = appendGoalTaskStartDateErrors(errors, *gr.StartDate, goalDb)
+	}
 
 	if len(errors) > 0 {
 		return errors
@@ -90,7 +96,7 @@ func buildGoalStatus(value *string) (*schemas.GoalStatus, *models.ErrorMessage) 
 	}
 }
 
-func buildGoalDates(gr *dto.Update, goalDb *schemas.Goal) (*dates.GoalDates, []*models.ErrorMessage) {
+func buildGoalDates(gr *dto.Update, goalDb *schemas.Goal, startDateChanged bool) (*dates.GoalDates, []*models.ErrorMessage) {
 	if gr.StartDate == nil && gr.EndDate == nil {
 		return nil, nil
 	}
@@ -105,7 +111,7 @@ func buildGoalDates(gr *dto.Update, goalDb *schemas.Goal) (*dates.GoalDates, []*
 		finalizationForecast = *gr.EndDate
 	}
 
-	goalDates, errors := buildGoalDatesValue(startDate, finalizationForecast, gr.StartDate != nil)
+	goalDates, errors := buildGoalDatesValue(startDate, finalizationForecast, startDateChanged)
 	if len(errors) > 0 {
 		return nil, errors
 	}
@@ -119,4 +125,34 @@ func buildGoalDatesValue(startDate, finalizationForecast time.Time, startDateCha
 	}
 
 	return dates.NewGoalDatesFromExistingStart(startDate, finalizationForecast)
+}
+
+func hasGoalStartDateChanged(current time.Time, next *time.Time) bool {
+	if next == nil {
+		return false
+	}
+
+	return !current.Equal(*next)
+}
+
+func appendGoalTaskStartDateErrors(errors []*models.ErrorMessage, startDate time.Time, goalDb *schemas.Goal) []*models.ErrorMessage {
+	startDateOnly := dateOnly(startDate)
+
+	for _, task := range goalDb.GetTasks() {
+		taskStartDate := task.GetStartDate()
+		if taskStartDate == nil {
+			continue
+		}
+
+		if dateOnly(*taskStartDate).Before(startDateOnly) {
+			return append(errors, models.NewErrorMessage("StartDate", "must be less than or equal to existing task start dates"))
+		}
+	}
+
+	return errors
+}
+
+func dateOnly(value time.Time) time.Time {
+	year, month, day := value.Date()
+	return time.Date(year, month, day, 0, 0, 0, 0, value.Location())
 }

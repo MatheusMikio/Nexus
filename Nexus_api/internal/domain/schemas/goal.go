@@ -74,6 +74,10 @@ func (g *Goal) GetTaskIDs() []uint {
 	return taskIDs
 }
 
+func (g *Goal) GetTasks() []Task {
+	return g.Tasks
+}
+
 func (g *Goal) ChangeName(goalName models.GoalName) {
 	g.GoalName = goalName
 }
