@@ -1015,9 +1015,6 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "finalizationDate": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },

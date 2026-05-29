@@ -5,10 +5,9 @@ import (
 )
 
 type Request struct {
-	Name             string     `json:"name"`
-	Description      string     `json:"description"`
-	StartDate        *time.Time `json:"startDate"`
-	FinalizationDate *time.Time `json:"finalizationDate"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	StartDate   *time.Time `json:"startDate"`
 }
 
 type Response struct {

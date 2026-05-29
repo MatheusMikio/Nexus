@@ -63,3 +63,7 @@ func (u *User) Update(fullName *models.FullName, contact *contact.Contact, passw
 		u.Password = *password
 	}
 }
+
+func (u *User) ChangePassword(password models.Password) {
+	u.Password = password
+}

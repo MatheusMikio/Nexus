@@ -1,16 +1,13 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/MatheusMikio/Nexus/internal/domain/dtos/task"
+	"github.com/MatheusMikio/Nexus/internal/domain/factory"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
-	"github.com/MatheusMikio/Nexus/internal/domain/models/dates"
 	"github.com/MatheusMikio/Nexus/internal/domain/models/parameters"
-	"github.com/MatheusMikio/Nexus/internal/domain/schemas"
+	"github.com/MatheusMikio/Nexus/internal/helper"
 	"github.com/MatheusMikio/Nexus/internal/mapper"
 	"github.com/MatheusMikio/Nexus/internal/repository"
-	"github.com/MatheusMikio/Nexus/internal/repository/base"
 	"github.com/google/uuid"
 )
 
@@ -39,7 +36,7 @@ func NewTaskService(taskRepo repository.ITaskRepository, goalRepo repository.IGo
 func (t *TaskService) GetAllTasks(parameters parameters.PaginationQuery, goalId uint, userId uuid.UUID) ([]*task.Response, *models.ErrorMessage) {
 	user, err := t.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return nil, models.NewErrorMessage("User", "Not found.")
+		return nil, helper.FindError("User", err)
 	}
 
 	tasksDb, err := t.TaskRepository.GetAllByGoalID(
@@ -59,12 +56,12 @@ func (t *TaskService) GetAllTasks(parameters parameters.PaginationQuery, goalId 
 func (t *TaskService) GetById(goalId, id uint, userId uuid.UUID) (*task.Response, *models.ErrorMessage) {
 	userDb, err := t.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return nil, userFindError(err)
+		return nil, helper.FindError("User", err)
 	}
 
 	taskDb, err := t.TaskRepository.GetByIDAndGoalIDAndUserID(id, goalId, userDb.ID)
 	if err != nil {
-		return nil, taskFindError(err)
+		return nil, helper.FindError("Task", err)
 	}
 
 	return mapper.TaskToResponse(taskDb), nil
@@ -73,24 +70,15 @@ func (t *TaskService) GetById(goalId, id uint, userId uuid.UUID) (*task.Response
 func (t *TaskService) Create(goalID uint, tr *task.Request, userId uuid.UUID) []*models.ErrorMessage {
 	userDb, err := t.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return []*models.ErrorMessage{userFindError(err)}
+		return []*models.ErrorMessage{helper.FindError("User", err)}
 	}
 
-	if _, err := t.GoalRepository.GetByIDAndUserID(goalID, userDb.ID); err != nil {
-		return []*models.ErrorMessage{goalFindError(err)}
+	goalDb, err := t.GoalRepository.GetByIDAndUserID(goalID, userDb.ID)
+	if err != nil {
+		return []*models.ErrorMessage{helper.FindError("Goal", err)}
 	}
 
-	taskName, errs := models.NewGoalName(tr.Name)
-	if len(errs) > 0 {
-		return errs
-	}
-
-	taskDates, errs := dates.NewTaskDates(tr.StartDate, tr.FinalizationDate)
-	if len(errs) > 0 {
-		return errs
-	}
-
-	taskDb, errs := schemas.NewTask(taskName, tr.Description, taskDates, goalID)
+	taskDb, errs := factory.NewTaskFromRequest(tr, goalDb)
 	if len(errs) > 0 {
 		return errs
 	}
@@ -105,49 +93,23 @@ func (t *TaskService) Create(goalID uint, tr *task.Request, userId uuid.UUID) []
 func (t *TaskService) Update(goalId, id uint, tr *task.Update, userId uuid.UUID) []*models.ErrorMessage {
 	userDb, err := t.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return []*models.ErrorMessage{userFindError(err)}
+		return []*models.ErrorMessage{helper.FindError("User", err)}
+	}
+
+	goalDb, err := t.GoalRepository.GetByIDAndUserID(goalId, userDb.ID)
+	if err != nil {
+		return []*models.ErrorMessage{helper.FindError("Goal", err)}
 	}
 
 	taskDb, err := t.TaskRepository.GetByIDAndGoalIDAndUserID(id, goalId, userDb.ID)
 	if err != nil {
-		return []*models.ErrorMessage{taskFindError(err)}
+		return []*models.ErrorMessage{helper.FindError("Task", err)}
 	}
 
-	if tr.Name != nil {
-		taskName, errs := models.NewGoalName(*tr.Name)
-		if len(errs) > 0 {
-			return errs
-		}
-		taskDb.Name = taskName
-	}
-
-	if tr.Description != nil {
-		taskDb.Description = *tr.Description
-	}
-
-	if tr.Status != nil {
-		status, errMessage := parseTaskStatus(*tr.Status)
-		if errMessage != nil {
-			return []*models.ErrorMessage{errMessage}
-		}
-		taskDb.Status = status
-	}
-
-	startDate := taskDb.Dates.StartDate
-	if tr.StartDate != nil {
-		startDate = tr.StartDate
-	}
-
-	finalizationDate := taskDb.Dates.FinalizationDate
-	if tr.FinalizationDate != nil {
-		finalizationDate = tr.FinalizationDate
-	}
-
-	taskDates, errs := dates.NewTaskDates(startDate, finalizationDate)
+	errs := factory.BuildTaskUpdate(tr, taskDb, goalDb)
 	if len(errs) > 0 {
 		return errs
 	}
-	taskDb.Dates = taskDates
 
 	if err := t.TaskRepository.Update(taskDb); err != nil {
 		return []*models.ErrorMessage{models.NewErrorMessage("Database", err.Error())}
@@ -159,12 +121,12 @@ func (t *TaskService) Update(goalId, id uint, tr *task.Update, userId uuid.UUID)
 func (t *TaskService) Delete(goalId, id uint, userId uuid.UUID) *models.ErrorMessage {
 	userDb, err := t.UserRepository.GetByUuid(userId)
 	if err != nil {
-		return userFindError(err)
+		return helper.FindError("User", err)
 	}
 
 	taskDb, err := t.TaskRepository.GetByIDAndGoalIDAndUserID(id, goalId, userDb.ID)
 	if err != nil {
-		return taskFindError(err)
+		return helper.FindError("Task", err)
 	}
 
 	if err := t.TaskRepository.Delete(taskDb); err != nil {
@@ -172,21 +134,4 @@ func (t *TaskService) Delete(goalId, id uint, userId uuid.UUID) *models.ErrorMes
 	}
 
 	return nil
-}
-
-func parseTaskStatus(status string) (schemas.TaskStatus, *models.ErrorMessage) {
-	switch schemas.TaskStatus(status) {
-	case schemas.TaskPending, schemas.TaskInProgress, schemas.TaskCompleted:
-		return schemas.TaskStatus(status), nil
-	default:
-		return "", models.NewErrorMessage("Status", "invalid")
-	}
-}
-
-func taskFindError(err error) *models.ErrorMessage {
-	if errors.Is(err, base.ErrNotFound) {
-		return models.NewErrorMessage("Task", "Not found")
-	}
-
-	return models.NewErrorMessage("Database", err.Error())
 }

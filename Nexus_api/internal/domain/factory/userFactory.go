@@ -42,14 +42,11 @@ func BuildUserUpdate(user *dto.Update, userDb *schemas.User) []*models.ErrorMess
 	contact, err := buildContact(user, userDb.Contact)
 	errors = helper.AppendErrors(errors, err)
 
-	password, err := buildPassword(user.Password, userDb.Password)
-	errors = helper.AppendErrors(errors, err)
-
 	if len(errors) > 0 {
 		return errors
 	}
 
-	userDb.Update(name, contact, password)
+	userDb.Update(name, contact, nil)
 	return nil
 }
 
@@ -98,17 +95,4 @@ func buildContact(user *dto.Update, current contact.Contact) (*contact.Contact, 
 	}
 
 	return &newContact, nil
-}
-
-func buildPassword(value *string, current models.Password) (*models.Password, []*models.ErrorMessage) {
-	if value == nil || *value == current.GetValue() {
-		return nil, nil
-	}
-
-	password, errors := models.NewPassword(*value)
-	if len(errors) > 0 {
-		return nil, errors
-	}
-
-	return &password, nil
 }

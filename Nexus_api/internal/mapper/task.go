@@ -9,12 +9,12 @@ func TaskToResponse(task *schemas.Task) *dto.Response {
 	return &dto.Response{
 		ID:               task.ID,
 		Name:             task.GetName(),
-		Description:      task.Description,
-		Status:           string(task.Status),
+		Description:      task.GetDescription(),
+		Status:           string(task.GetStatus()),
 		StartDate:        task.GetStartDate(),
 		FinalizationDate: task.GetFinalizationDate(),
 		TimeSpent:        task.GetTimeSpent(),
-		GoalID:           task.GoalID,
+		GoalID:           task.GetGoalID(),
 	}
 }
 
