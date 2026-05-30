@@ -132,19 +132,17 @@ func hasGoalStartDateChanged(current time.Time, next *time.Time) bool {
 		return false
 	}
 
-	return !current.Equal(*next)
+	return dates.CompareDate(*next, current, current.Location()) != 0
 }
 
 func appendGoalTaskStartDateErrors(errors []*models.ErrorMessage, startDate time.Time, goalDb *schemas.Goal) []*models.ErrorMessage {
-	startDateOnly := dateOnly(startDate)
-
 	for _, task := range goalDb.GetTasks() {
 		taskStartDate := task.GetStartDate()
 		if taskStartDate == nil {
 			continue
 		}
 
-		if dateOnly(*taskStartDate).Before(startDateOnly) {
+		if dates.CompareDate(*taskStartDate, startDate, startDate.Location()) < 0 {
 			return append(errors, models.NewErrorMessage("StartDate", "must be less than or equal to existing task start dates"))
 		}
 	}

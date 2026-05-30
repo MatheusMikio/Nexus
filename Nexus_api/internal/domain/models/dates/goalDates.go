@@ -22,9 +22,7 @@ func NewGoalDatesFromExistingStart(startDate time.Time, finalizationForecast tim
 func newGoalDates(startDate time.Time, finalizationForecast time.Time, validateCurrentDate bool) (GoalDates, []*models.ErrorMessage) {
 	errors := make([]*models.ErrorMessage, 0)
 
-	startDateOnly := dateOnly(startDate)
-	finalizationForecastOnly := dateOnly(finalizationForecast)
-	today := dateOnly(time.Now().In(startDate.Location()))
+	validationLocation := startDate.Location()
 
 	if startDate.IsZero() {
 		errors = append(errors, models.NewErrorMessage("StartDate", "is required"))
@@ -34,11 +32,11 @@ func newGoalDates(startDate time.Time, finalizationForecast time.Time, validateC
 		errors = append(errors, models.NewErrorMessage("FinalizationForecast", "is required"))
 	}
 
-	if validateCurrentDate && !startDate.IsZero() && startDateOnly.Before(today) {
+	if validateCurrentDate && !startDate.IsZero() && CompareDate(startDate, time.Now(), validationLocation) < 0 {
 		errors = append(errors, models.NewErrorMessage("StartDate", "must be greater than or equal to current date"))
 	}
 
-	if !startDate.IsZero() && !finalizationForecast.IsZero() && finalizationForecastOnly.Before(startDateOnly) {
+	if !startDate.IsZero() && !finalizationForecast.IsZero() && CompareDate(finalizationForecast, startDate, validationLocation) < 0 {
 		errors = append(errors, models.NewErrorMessage("FinalizationForecast", "must be greater than or equal to start date"))
 	}
 
@@ -50,11 +48,6 @@ func newGoalDates(startDate time.Time, finalizationForecast time.Time, validateC
 		StartDate:            startDate,
 		FinalizationForecast: finalizationForecast,
 	}, nil
-}
-
-func dateOnly(value time.Time) time.Time {
-	year, month, day := value.Date()
-	return time.Date(year, month, day, 0, 0, 0, 0, value.Location())
 }
 
 func (g *GoalDates) GetStartDateValue() time.Time {

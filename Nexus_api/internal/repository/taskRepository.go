@@ -32,7 +32,7 @@ func (tr *TaskRepository) GetAllByGoalID(page, size int, goalID uint, userID uin
 
 	err := tr.Db.
 		Joins("JOIN goals ON goals.id = tasks.goal_id").
-		Where("tasks.goal_id = ? AND goals.user_id = ?", goalID, userID).
+		Where("tasks.goal_id = ? AND goals.user_id = ? AND goals.deleted_at IS NULL", goalID, userID).
 		Offset(offset).
 		Limit(size).
 		Find(&tasks).Error
@@ -49,7 +49,7 @@ func (tr *TaskRepository) GetByIDAndGoalIDAndUserID(taskID, goalID, userID uint)
 
 	err := tr.Db.
 		Joins("JOIN goals ON goals.id = tasks.goal_id").
-		Where("tasks.id = ? AND tasks.goal_id = ? AND goals.user_id = ?", taskID, goalID, userID).
+		Where("tasks.id = ? AND tasks.goal_id = ? AND goals.user_id = ? AND goals.deleted_at IS NULL", taskID, goalID, userID).
 		First(&task).Error
 
 	if err != nil {

@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to make debug",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "debugAdapter": "legacy",
+            "host": "127.0.0.1",
+            "port": 2345,
+            "remotePath": "${workspaceFolder}/Nexus_api"
+        },
+        {
+            "name": "Debug Nexus API",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/Nexus_api/cmd/api",
+            "cwd": "${workspaceFolder}/Nexus_api",
+            "envFile": "${workspaceFolder}/Nexus_api/.env"
+        }
+    ]
+}

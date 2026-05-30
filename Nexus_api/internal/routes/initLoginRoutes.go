@@ -9,6 +9,6 @@ import (
 func initLoginRoutes(rg *gin.RouterGroup, service service.ILoginService) {
 	login := rg.Group("auth")
 	{
-		login.POST("", handler.LoginHandler(service))
+		login.POST("/login", handler.LoginHandler(service))
 	}
 }

@@ -24,5 +24,7 @@ func main() {
 	}
 
 	db := config.GetDb()
-	routes.Init(db)
+	if err := routes.Init(db); err != nil {
+		fmt.Printf("Erro ao inicializar servidor: %s", err.Error())
+	}
 }

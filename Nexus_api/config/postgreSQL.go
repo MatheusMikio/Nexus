@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	//"github.com/MatheusMikio/Nexus/internal/domain/schemas"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

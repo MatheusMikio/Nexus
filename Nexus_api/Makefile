@@ -1,4 +1,4 @@
-.PHONY: default run run-with-docs build test docs clean fmt tidy
+.PHONY: default run run-with-docs debug debug-stop build test docs clean fmt tidy
 
 APP_NAME=nexus-api
 ENTRYPOINT=./cmd/api

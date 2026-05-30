@@ -19,7 +19,7 @@ import (
 // @Success 200 {object} auth.LoginResponse
 // @Failure 400 {object} models.ErrorMessage
 // @Failure 422 {object} models.ErrorMessage
-// @Router /auth [post]
+// @Router /auth/login [post]
 func LoginHandler(service service.ILoginService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		request := &auth.Login{}
