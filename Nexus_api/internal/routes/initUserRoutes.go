@@ -16,9 +16,9 @@ func initPublicUserRoutes(router *gin.RouterGroup, service service.IUserService)
 func initDefaultUserRoutes(router *gin.RouterGroup, service service.IUserService) {
 	user := router.Group("/user")
 	{
-		user.GET("/:id", handler.GetUserById(service))
-		user.PUT("/:id", handler.UpdateUser(service))
-		user.DELETE("/:id", handler.DeleteUser(service))
+		user.GET("/me", handler.GetMe(service))
+		user.PUT("/me", handler.UpdateMe(service))
+		user.DELETE("/me", handler.DeleteMe(service))
 	}
 }
 
@@ -26,5 +26,12 @@ func initAdminUserRoutes(router *gin.RouterGroup, service service.IUserService) 
 	user := router.Group("/user")
 	{
 		user.GET("", handler.GetAllUsers(service))
+	}
+
+	adminUser := router.Group("/admin/user")
+	{
+		adminUser.GET("/:id", handler.GetUserById(service))
+		adminUser.PUT("/:id", handler.UpdateUser(service))
+		adminUser.DELETE("/:id", handler.DeleteUser(service))
 	}
 }

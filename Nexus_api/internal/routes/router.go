@@ -7,10 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init(db *gorm.DB) {
-	container := container.NewContainer(db)
+func Init(db *gorm.DB) error {
+	dependencies := container.NewContainer(db)
 	router := gin.Default()
 	router.Use(middlewares.CorsMiddleware())
-	initRoutes(router, container)
-	router.Run(":8080")
+	initRoutes(router, dependencies)
+
+	return router.Run(":8080")
 }

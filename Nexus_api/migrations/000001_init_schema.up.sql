@@ -45,8 +45,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone varchar(11) NOT NULL,
     role role NOT NULL DEFAULT 'DEFAULT',
     password varchar(255) NOT NULL,
-    CONSTRAINT uni_users_public_id UNIQUE (public_id),
-    CONSTRAINT uni_users_email UNIQUE (email)
+    CONSTRAINT uni_users_public_id UNIQUE (public_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_deleted_at ON users (deleted_at);

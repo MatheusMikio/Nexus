@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,7 +23,6 @@ type Config struct {
 	DBName             string
 	DBSSLMode          string
 	JWTSecret          string
-	PasswordPepper     string
 	CORSAllowedOrigins []string
 }
 
@@ -48,14 +46,13 @@ func Init() error {
 
 func loadConfig() (Config, error) {
 	config := Config{
-		DBHost:         strings.TrimSpace(os.Getenv("DB_HOST")),
-		DBPort:         strings.TrimSpace(os.Getenv("DB_PORT")),
-		DBUser:         strings.TrimSpace(os.Getenv("DB_USER")),
-		DBPassword:     strings.TrimSpace(os.Getenv("DB_PASSWORD")),
-		DBName:         strings.TrimSpace(os.Getenv("DB_NAME")),
-		DBSSLMode:      strings.TrimSpace(os.Getenv("DB_SSLMODE")),
-		JWTSecret:      strings.TrimSpace(os.Getenv("JWT_SECRET")),
-		PasswordPepper: strings.TrimSpace(os.Getenv("PASSWORD_PEPPER")),
+		DBHost:     strings.TrimSpace(os.Getenv("DB_HOST")),
+		DBPort:     strings.TrimSpace(os.Getenv("DB_PORT")),
+		DBUser:     strings.TrimSpace(os.Getenv("DB_USER")),
+		DBPassword: strings.TrimSpace(os.Getenv("DB_PASSWORD")),
+		DBName:     strings.TrimSpace(os.Getenv("DB_NAME")),
+		DBSSLMode:  strings.TrimSpace(os.Getenv("DB_SSLMODE")),
+		JWTSecret:  strings.TrimSpace(os.Getenv("JWT_SECRET")),
 	}
 
 	config.CORSAllowedOrigins = splitCSV(os.Getenv("CORS_ALLOWED_ORIGINS"))
@@ -81,10 +78,6 @@ func loadConfig() (Config, error) {
 		return Config{}, fmt.Errorf("missing required environment variables: %s", strings.Join(missing, ", "))
 	}
 
-	if strings.TrimSpace(config.PasswordPepper) == "" {
-		return Config{}, errors.New("missing required environment variable: PASSWORD_PEPPER")
-	}
-
 	return config, nil
 }
 
@@ -108,4 +101,12 @@ func GetJwtSecret() string {
 		return os.Getenv("JWT_SECRET")
 	}
 	return cfg.JWTSecret
+}
+
+func GetCORSAllowedOrigins() []string {
+	if len(cfg.CORSAllowedOrigins) == 0 {
+		return splitCSV(os.Getenv("CORS_ALLOWED_ORIGINS"))
+	}
+
+	return append([]string(nil), cfg.CORSAllowedOrigins...)
 }

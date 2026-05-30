@@ -158,7 +158,7 @@ func hasTaskStartDateChanged(current *time.Time, next *time.Time) bool {
 		return current != next
 	}
 
-	return !current.Equal(*next)
+	return dates.CompareDate(*next, *current, current.Location()) != 0
 }
 
 func appendTaskStartDateError(errors []*models.ErrorMessage, startDate *time.Time) []*models.ErrorMessage {
@@ -166,10 +166,7 @@ func appendTaskStartDateError(errors []*models.ErrorMessage, startDate *time.Tim
 		return errors
 	}
 
-	startDateOnly := dateOnly(*startDate)
-	today := dateOnly(time.Now().In(startDate.Location()))
-
-	if startDateOnly.Before(today) {
+	if dates.CompareDate(*startDate, time.Now(), startDate.Location()) < 0 {
 		return append(errors, models.NewErrorMessage("StartDate", "must be greater than or equal to current date"))
 	}
 
@@ -181,17 +178,10 @@ func appendTaskGoalStartDateError(errors []*models.ErrorMessage, startDate *time
 		return errors
 	}
 
-	taskStartDate := dateOnly(*startDate)
-	goalStartDate := dateOnly(goal.GetStartDate())
-
-	if taskStartDate.Before(goalStartDate) {
+	goalStartDate := goal.GetStartDate()
+	if dates.CompareDate(*startDate, goalStartDate, goalStartDate.Location()) < 0 {
 		return append(errors, models.NewErrorMessage("StartDate", "must be greater than or equal to goal start date"))
 	}
 
 	return errors
-}
-
-func dateOnly(value time.Time) time.Time {
-	year, month, day := value.Date()
-	return time.Date(year, month, day, 0, 0, 0, 0, value.Location())
 }

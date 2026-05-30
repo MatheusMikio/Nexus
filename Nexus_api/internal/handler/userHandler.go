@@ -6,6 +6,7 @@ import (
 	userdto "github.com/MatheusMikio/Nexus/internal/domain/dtos/user"
 	"github.com/MatheusMikio/Nexus/internal/domain/models"
 	"github.com/MatheusMikio/Nexus/internal/helper"
+	"github.com/MatheusMikio/Nexus/internal/middlewares"
 	"github.com/MatheusMikio/Nexus/internal/response"
 	"github.com/MatheusMikio/Nexus/internal/service"
 	"github.com/gin-gonic/gin"
@@ -43,8 +44,36 @@ func GetAllUsers(userService service.IUserService) gin.HandlerFunc {
 	}
 }
 
+// GetMe godoc
+// @Summary Buscar usuario autenticado
+// @Tags Users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} userdto.Response
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
+// @Router /user/me [get]
+func GetMe(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID, err := middlewares.GetUserID(ctx)
+		if err != nil {
+			response.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+			return
+		}
+
+		user, serviceErr := userService.GetUserById(userID)
+		if serviceErr != nil {
+			response.SendError(ctx, helper.ErrorStatusCode(serviceErr), serviceErr)
+			return
+		}
+
+		response.SendSuccess(ctx, http.StatusOK, user)
+	}
+}
+
 // GetUserById godoc
-// @Summary Buscar usuario por ID
+// @Summary Buscar usuario por ID (admin)
 // @Tags Users
 // @Produce json
 // @Security BearerAuth
@@ -55,7 +84,7 @@ func GetAllUsers(userService service.IUserService) gin.HandlerFunc {
 // @Failure 403 {object} models.ErrorMessage
 // @Failure 404 {object} models.ErrorMessage
 // @Failure 500 {object} models.ErrorMessage
-// @Router /user/{id} [get]
+// @Router /admin/user/{id} [get]
 func GetUserById(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idStr := ctx.Param("id")
@@ -63,10 +92,6 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 
 		if err != nil {
 			response.SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
-			return
-		}
-
-		if !helper.AuthorizeSelfOrAdmin(ctx, id) {
 			return
 		}
 
@@ -78,6 +103,47 @@ func GetUserById(userService service.IUserService) gin.HandlerFunc {
 		}
 
 		response.SendSuccess(ctx, http.StatusOK, user)
+	}
+}
+
+// UpdateMe godoc
+// @Summary Atualizar usuario autenticado
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body userdto.Update true "Dados do usuario"
+// @Success 200
+// @Failure 400 {object} models.ErrorMessage
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
+// @Router /user/me [put]
+func UpdateMe(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID, err := middlewares.GetUserID(ctx)
+		if err != nil {
+			response.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+			return
+		}
+
+		request := &userdto.Update{}
+		if err := ctx.ShouldBindJSON(request); err != nil {
+			response.SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", err.Error()))
+			return
+		}
+
+		if err := userService.UpdateUser(userID, request); err != nil {
+			statusCode := http.StatusBadRequest
+			if len(err) == 1 {
+				statusCode = helper.ErrorStatusCode(err[0])
+			}
+
+			response.SendErrors(ctx, statusCode, err)
+			return
+		}
+
+		response.SendSuccess(ctx, http.StatusOK, nil)
 	}
 }
 
@@ -115,7 +181,7 @@ func CreateUser(userService service.IUserService) gin.HandlerFunc {
 }
 
 // UpdateUser godoc
-// @Summary Atualizar usuario
+// @Summary Atualizar usuario por ID (admin)
 // @Tags Users
 // @Accept json
 // @Produce json
@@ -128,17 +194,13 @@ func CreateUser(userService service.IUserService) gin.HandlerFunc {
 // @Failure 403 {object} models.ErrorMessage
 // @Failure 404 {object} models.ErrorMessage
 // @Failure 500 {object} models.ErrorMessage
-// @Router /user/{id} [put]
+// @Router /admin/user/{id} [put]
 func UpdateUser(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idStr := ctx.Param("id")
 		id, err := uuid.Parse(idStr)
 		if err != nil {
 			response.SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
-			return
-		}
-
-		if !helper.AuthorizeSelfOrAdmin(ctx, id) {
 			return
 		}
 
@@ -162,8 +224,35 @@ func UpdateUser(userService service.IUserService) gin.HandlerFunc {
 	}
 }
 
+// DeleteMe godoc
+// @Summary Remover usuario autenticado
+// @Tags Users
+// @Produce json
+// @Security BearerAuth
+// @Success 200
+// @Failure 401 {object} models.ErrorMessage
+// @Failure 404 {object} models.ErrorMessage
+// @Failure 500 {object} models.ErrorMessage
+// @Router /user/me [delete]
+func DeleteMe(userService service.IUserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID, err := middlewares.GetUserID(ctx)
+		if err != nil {
+			response.SendError(ctx, http.StatusUnauthorized, models.NewErrorMessage("Authorization", "unauthorized"))
+			return
+		}
+
+		if err := userService.DeleteUser(userID); err != nil {
+			response.SendError(ctx, helper.ErrorStatusCode(err), err)
+			return
+		}
+
+		response.SendSuccess(ctx, http.StatusOK, nil)
+	}
+}
+
 // DeleteUser godoc
-// @Summary Remover usuario
+// @Summary Remover usuario por ID (admin)
 // @Tags Users
 // @Produce json
 // @Security BearerAuth
@@ -174,7 +263,7 @@ func UpdateUser(userService service.IUserService) gin.HandlerFunc {
 // @Failure 403 {object} models.ErrorMessage
 // @Failure 404 {object} models.ErrorMessage
 // @Failure 500 {object} models.ErrorMessage
-// @Router /user/{id} [delete]
+// @Router /admin/user/{id} [delete]
 func DeleteUser(userService service.IUserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idStr := ctx.Param("id")
@@ -182,10 +271,6 @@ func DeleteUser(userService service.IUserService) gin.HandlerFunc {
 		id, err := uuid.Parse(idStr)
 		if err != nil {
 			response.SendError(ctx, http.StatusBadRequest, models.NewErrorMessage("Validation", "Invalid user ID"))
-			return
-		}
-
-		if !helper.AuthorizeSelfOrAdmin(ctx, id) {
 			return
 		}
 

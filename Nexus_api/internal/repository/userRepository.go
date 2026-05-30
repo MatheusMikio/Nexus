@@ -15,6 +15,10 @@ type IUserRepository interface {
 	GetByUuid(uuid uuid.UUID) (*schemas.User, error)
 	GetByUuidWithGoals(uuid uuid.UUID) (*schemas.User, error)
 	GetByEmail(email string) (*schemas.User, error)
+	ActiveExistsByEmail(email string) (bool, error)
+	ActiveExistsByPhone(phone string) (bool, error)
+	ActiveExistsByEmailExceptID(email string, id uint) (bool, error)
+	ActiveExistsByPhoneExceptID(phone string, id uint) (bool, error)
 }
 
 type UserRepository struct {
@@ -78,4 +82,29 @@ func (ur *UserRepository) GetByEmail(email string) (*schemas.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (ur *UserRepository) ActiveExistsByEmail(email string) (bool, error) {
+	return ur.activeExists("email = ?", email)
+}
+
+func (ur *UserRepository) ActiveExistsByPhone(phone string) (bool, error) {
+	return ur.activeExists("phone = ?", phone)
+}
+
+func (ur *UserRepository) ActiveExistsByEmailExceptID(email string, id uint) (bool, error) {
+	return ur.activeExists("email = ? AND id <> ?", email, id)
+}
+
+func (ur *UserRepository) ActiveExistsByPhoneExceptID(phone string, id uint) (bool, error) {
+	return ur.activeExists("phone = ? AND id <> ?", phone, id)
+}
+
+func (ur *UserRepository) activeExists(query string, args ...any) (bool, error) {
+	var count int64
+	if err := ur.Db.Model(&schemas.User{}).Where(query, args...).Count(&count).Error; err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }

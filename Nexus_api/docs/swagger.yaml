@@ -162,7 +162,129 @@ info:
   title: Nexus API
   version: "1.0"
 paths:
-  /auth:
+  /admin/user/{id}:
+    delete:
+      parameters:
+      - description: ID publico do usuario
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+      security:
+      - BearerAuth: []
+      summary: Remover usuario por ID (admin)
+      tags:
+      - Users
+    get:
+      parameters:
+      - description: ID publico do usuario
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+      security:
+      - BearerAuth: []
+      summary: Buscar usuario por ID (admin)
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID publico do usuario
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados do usuario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.Update'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorMessage'
+      security:
+      - BearerAuth: []
+      summary: Atualizar usuario por ID (admin)
+      tags:
+      - Users
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -649,29 +771,15 @@ paths:
       summary: Criar usuario
       tags:
       - Users
-  /user/{id}:
+  /user/me:
     delete:
-      parameters:
-      - description: ID publico do usuario
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorMessage'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorMessage'
-        "403":
-          description: Forbidden
           schema:
             $ref: '#/definitions/models.ErrorMessage'
         "404":
@@ -684,16 +792,10 @@ paths:
             $ref: '#/definitions/models.ErrorMessage'
       security:
       - BearerAuth: []
-      summary: Remover usuario
+      summary: Remover usuario autenticado
       tags:
       - Users
     get:
-      parameters:
-      - description: ID publico do usuario
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -701,16 +803,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/user.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorMessage'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorMessage'
-        "403":
-          description: Forbidden
           schema:
             $ref: '#/definitions/models.ErrorMessage'
         "404":
@@ -723,18 +817,13 @@ paths:
             $ref: '#/definitions/models.ErrorMessage'
       security:
       - BearerAuth: []
-      summary: Buscar usuario por ID
+      summary: Buscar usuario autenticado
       tags:
       - Users
     put:
       consumes:
       - application/json
       parameters:
-      - description: ID publico do usuario
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Dados do usuario
         in: body
         name: request
@@ -754,10 +843,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/models.ErrorMessage'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/models.ErrorMessage'
         "404":
           description: Not Found
           schema:
@@ -768,7 +853,7 @@ paths:
             $ref: '#/definitions/models.ErrorMessage'
       security:
       - BearerAuth: []
-      summary: Atualizar usuario
+      summary: Atualizar usuario autenticado
       tags:
       - Users
 securityDefinitions:
